@@ -1,0 +1,29 @@
+# dependencies and build output
+node_modules/
+dist/
+.astro/
+
+# test and audit output
+test-results/
+playwright-report/
+.lighthouseci/
+screenshots/
+
+# secrets
+.env
+.env.*
+!.env.example
+
+# privacy: never commit PDFs (transcripts, the master CV with private details) or transcript-like files
+*.pdf
+*transcript*
+*Transcript*
+*.docx
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.log

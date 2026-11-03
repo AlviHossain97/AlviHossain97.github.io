@@ -1,0 +1,3 @@
+#!/bin/sh
+# Privacy guard: see scripts/check-privacy.mjs
+node scripts/check-privacy.mjs
