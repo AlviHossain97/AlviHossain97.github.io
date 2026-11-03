@@ -1,0 +1,81 @@
+---
+// 1200x630 social card. Screenshotted by scripts/postbuild.mjs into dist/og.png, then removed from dist.
+import '@fontsource-variable/geist/wght.css';
+import '@fontsource-variable/geist-mono/wght.css';
+import { cv } from '../data/cv';
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>og-card</title>
+    <style is:global>
+      html,
+      body {
+        margin: 0;
+        width: 1200px;
+        height: 630px;
+        background: #0b0f15;
+        color: #f2f4f7;
+        font-family: 'Geist Variable', sans-serif;
+        overflow: hidden;
+      }
+      .card {
+        position: relative;
+        box-sizing: border-box;
+        width: 1200px;
+        height: 630px;
+        padding: 72px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 48px 48px;
+      }
+      h1 {
+        margin: 0;
+        font-size: 120px;
+        line-height: 1;
+        letter-spacing: -0.04em;
+        font-weight: 650;
+      }
+      ul {
+        margin: 36px 0 0;
+        padding: 0;
+        list-style: none;
+        font-size: 36px;
+        line-height: 1.35;
+        color: #c9ced8;
+      }
+      li::before {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        margin-right: 18px;
+        border-radius: 50%;
+        background: #7fe0d2;
+        vertical-align: middle;
+      }
+      .foot {
+        font-family: 'Geist Mono Variable', monospace;
+        font-size: 26px;
+        color: #8d95a3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div>
+        <h1>{cv.person.name}</h1>
+        <ul>
+          {cv.person.positioning.map((p) => <li>{p}</li>)}
+        </ul>
+      </div>
+      <div class="foot">alvihossain97.github.io</div>
+    </div>
+  </body>
+</html>

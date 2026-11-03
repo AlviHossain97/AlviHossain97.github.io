@@ -1,0 +1,107 @@
+---
+// Hidden on screen. Printing the page (or generating the PDF) shows only this block.
+import { cv } from '../data/cv';
+import { displayUrl, orgLine } from '../lib/cv-helpers';
+
+const work = cv.entries.filter((e) => e.kind === 'work');
+const projects = cv.entries.filter((e) => e.kind === 'project');
+const education = cv.entries.filter((e) => e.kind === 'education');
+const sortNewest = <T extends { sort?: number | undefined }>(list: T[]) =>
+  [...list].sort((a, b) => (b.sort ?? 0) - (a.sort ?? 0));
+const skillsByGroup = cv.skillGroups.map((g) => ({
+  label: g.label,
+  names: cv.skills.filter((s) => s.group === g.id).map((s) => s.name),
+}));
+---
+
+<div class="print-cv">
+  <header>
+    <h1>{cv.person.name}</h1>
+    <p class="pc-headline">{cv.person.positioning.join(' · ')}</p>
+    <p class="pc-contact">
+      <span>{cv.contact.email}</span>
+      <span>{displayUrl(cv.contact.linkedin.href)}</span>
+      <span>{displayUrl(cv.contact.github.href)}</span>
+      <span>{cv.person.location}</span>
+      <span>{cv.person.workAuthorisation}</span>
+    </p>
+  </header>
+
+  <h2>Profile</h2>
+  <p>{cv.person.profile}</p>
+  <p>{cv.person.availability}</p>
+
+  <h2>Experience</h2>
+  {
+    sortNewest(work).map((e) => (
+      <div class="pc-entry">
+        <div class="pc-row">
+          <h3>
+            {e.title} <span class="pc-org">· {orgLine(e)}</span>
+          </h3>
+          <span class="pc-when">{e.period}</span>
+        </div>
+        <ul>
+          {e.highlights.map((h) => (
+            <li>{h}</li>
+          ))}
+        </ul>
+      </div>
+    ))
+  }
+
+  <h2>Projects</h2>
+  {
+    [...sortNewest(projects.filter((p) => p.sort !== undefined)), ...projects.filter((p) => p.sort === undefined)].map(
+      (e) => (
+        <div class="pc-entry">
+          <div class="pc-row">
+            <h3>
+              {e.title}
+              {e.org ? <span class="pc-org"> · {e.org}</span> : null}
+            </h3>
+            <span class="pc-when">{e.period}</span>
+          </div>
+          <p>{e.summary}</p>
+          {e.highlights.length > 0 && (
+            <ul>
+              {e.highlights.map((h) => (
+                <li>{h}</li>
+              ))}
+            </ul>
+          )}
+          {e.caseStudy && <p class="pc-org">Outcome: {e.caseStudy.outcome}</p>}
+          {e.links.map((l) => (
+            <p class="pc-org">Code: {displayUrl(l.href)}</p>
+          ))}
+        </div>
+      ),
+    )
+  }
+
+  <h2>Technical skills</h2>
+  {
+    skillsByGroup.map((g) => (
+      <p class="pc-skill-row">
+        <strong>{g.label}:</strong> {g.names.join(', ')}
+      </p>
+    ))
+  }
+
+  <h2>Education</h2>
+  {
+    sortNewest(education).map((e) => (
+      <div class="pc-entry">
+        <div class="pc-row">
+          <h3>
+            {e.title} <span class="pc-org">· {e.org}</span>
+          </h3>
+          <span class="pc-when">{e.period}</span>
+        </div>
+        <p>{e.summary}</p>
+        {e.modules.length > 0 && <p class="pc-org">Modules included: {e.modules.join(', ')}.</p>}
+      </div>
+    ))
+  }
+  <p class="pc-org">{cv.notes.join(' ')}</p>
+</div>

@@ -1,0 +1,47 @@
+---
+import { cv } from '../data/cv';
+const links = [
+  ['Timeline', '#timeline'],
+  ['Projects', '#projects'],
+  ['Skills', '#skills'],
+  ['Education', '#education'],
+  ['Contact', '#contact'],
+] as const;
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#top" aria-label={`${cv.person.name}, back to top`}>{cv.person.name}</a>
+    <nav class="nav" aria-label="Sections">
+      {links.map(([label, href]) => <a href={href}>{label}</a>)}
+    </nav>
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to light theme">
+      <svg class="icon moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"></path></svg>
+      <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true"
+        ><circle cx="12" cy="12" r="4"></circle><path
+          d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"
+        ></path></svg
+      >
+    </button>
+  </div>
+</header>
+
+<script>
+  // Mark the section currently in view in the nav.
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('.nav a')];
+  const byId = new Map(links.map((a) => [a.hash.slice(1), a]));
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.removeAttribute('aria-current'));
+        byId.get(e.target.id)?.setAttribute('aria-current', 'true');
+      }
+    },
+    { rootMargin: '-35% 0px -60% 0px' },
+  );
+  byId.forEach((_, id) => {
+    const el = document.getElementById(id);
+    if (el) io.observe(el);
+  });
+</script>

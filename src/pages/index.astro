@@ -1,0 +1,83 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Timeline from '../components/Timeline.tsx';
+import Projects from '../components/Projects.astro';
+import Skills from '../components/Skills.tsx';
+import Education from '../components/Education.astro';
+import Contact from '../components/Contact.astro';
+import PrintCV from '../components/PrintCV.astro';
+import { cv } from '../data/cv';
+import { KIND_LABEL, entriesUsing, orgLine, tagsFor, timelineOrder } from '../lib/cv-helpers';
+import type { Entry } from '../data/schema';
+
+const toTimeline = (e: Entry) => ({
+  id: e.id,
+  kind: e.kind,
+  kindLabel: KIND_LABEL[e.kind],
+  title: e.title,
+  org: orgLine(e),
+  period: e.period,
+  current: e.current,
+  summary: e.summary,
+  highlights: e.highlights,
+  tags: tagsFor(e),
+  links: e.links,
+  hasCaseStudy: Boolean(e.caseStudy),
+});
+const { dated, undated } = timelineOrder(cv.entries);
+
+const skills = cv.skills.map((s) => ({
+  id: s.id,
+  name: s.name,
+  group: s.group,
+  uses: entriesUsing(s.id).map((e) => ({
+    id: e.id,
+    title: e.title,
+    kindLabel: KIND_LABEL[e.kind],
+    org: orgLine(e),
+    period: e.period,
+  })),
+}));
+---
+
+<Base jsonLd>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <Header />
+  <main id="main">
+    <Hero />
+
+    <section class="section" id="timeline" aria-labelledby="timeline-title">
+      <div class="container section-grid">
+        <div class="section-head">
+          <h2 id="timeline-title">Timeline</h2>
+          <p>Work, education and projects, newest first. Filter, then open an entry for the detail.</p>
+        </div>
+        <Timeline client:load dated={dated.map(toTimeline)} undated={undated.map(toTimeline)} />
+      </div>
+    </section>
+
+    <Projects />
+
+    <section class="section" id="skills" aria-labelledby="skills-title">
+      <div class="container section-grid">
+        <div class="section-head">
+          <h2 id="skills-title">Skills</h2>
+          <p>Grouped as on my CV. Each one links to where it shows up in my work.</p>
+        </div>
+        <Skills client:load groups={cv.skillGroups} skills={skills} />
+      </div>
+    </section>
+
+    <Education />
+    <Contact />
+  </main>
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 {cv.person.name}. No analytics, no cookies.</p>
+      <p>Built with Astro. Code is MIT licensed; the CV content is not.</p>
+    </div>
+  </footer>
+  <PrintCV />
+</Base>

@@ -1,0 +1,104 @@
+/* Print stylesheet. The same output becomes the downloadable PDF (scripts/postbuild.mjs prints this page). */
+.print-cv {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 13mm 15mm 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  body > :not(.print-cv) {
+    display: none !important;
+  }
+  .print-cv {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 9.2pt;
+    line-height: 1.38;
+    color: #111;
+    --muted: #444;
+    --rule: #bbb;
+    --pc-accent: #0b5f58;
+  }
+  .print-cv a {
+    color: inherit;
+    text-decoration: none;
+  }
+  .print-cv h1 {
+    font-size: 22pt;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .print-cv .pc-headline {
+    margin-top: 2pt;
+    font-size: 10.5pt;
+    color: var(--pc-accent);
+    font-weight: 600;
+  }
+  .print-cv .pc-contact {
+    margin-top: 4pt;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 12pt;
+  }
+  .print-cv h2 {
+    margin: 10pt 0 4pt;
+    padding-bottom: 2pt;
+    border-bottom: 0.75pt solid var(--rule);
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--pc-accent);
+    font-weight: 700;
+    break-after: avoid;
+  }
+  .print-cv h3 {
+    font-size: 9.8pt;
+    letter-spacing: -0.005em;
+    font-weight: 650;
+  }
+  .print-cv .pc-entry {
+    margin-top: 5pt;
+    break-inside: avoid;
+  }
+  .print-cv .pc-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10pt;
+    align-items: baseline;
+  }
+  .print-cv .pc-when {
+    color: var(--muted);
+    font-size: 8.3pt;
+    text-align: right;
+    flex: none;
+    max-width: 45%;
+  }
+  .print-cv .pc-org {
+    color: var(--muted);
+  }
+  .print-cv ul {
+    margin: 2pt 0 0;
+    padding-left: 11pt;
+    list-style: disc;
+  }
+  .print-cv li {
+    margin-top: 1pt;
+  }
+  .print-cv p {
+    margin-top: 2pt;
+  }
+  .print-cv .pc-skill-row {
+    margin-top: 2pt;
+  }
+  .print-cv .pc-skill-row strong {
+    font-weight: 650;
+  }
+}
