@@ -46,6 +46,9 @@ jobs:
       - name: Build (site, PDF, social image)
         run: npm run build
 
+      - name: JS budget (lazy 3D chunk and the rest)
+        run: npm run check:budget
+
       - name: Test (Playwright and axe)
         run: npx playwright test
 
