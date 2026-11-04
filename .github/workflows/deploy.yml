@@ -1,4 +1,5 @@
 name: CI and deploy
+# Runs checks on every push and PR; deploys to GitHub Pages from main.
 
 on:
   push:
