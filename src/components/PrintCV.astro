@@ -67,7 +67,6 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
             ))}
           </ul>
         )}
-        {e.caseStudy && <p class="pc-org">Outcome: {e.caseStudy.outcome}</p>}
         {e.links.map((l) => (
           <p class="pc-org">Code: {displayUrl(l.href)}</p>
         ))}

@@ -214,6 +214,7 @@ const raw = {
       highlights: [
         'Integrated hardware and software, with database-backed functionality and structured data.',
         'Tested and evaluated the system, and documented the work.',
+        'Awarded 75/100 as the final-year project.',
       ],
       skills: ['tech-docs'],
       extraTech: ['Raspberry Pi', 'Local AI voice assistant', 'Laptop-hosted dashboard', 'Database-backed'],
