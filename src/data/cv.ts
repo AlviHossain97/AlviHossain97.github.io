@@ -93,13 +93,8 @@ const raw = {
       sort: 202609,
       current: true,
       summary: "Leading research, prototyping and technical planning for LearnThrive Tuition's digital platform.",
-      highlights: [
-        'Build the unified tutoring platform (see the case study under Projects).',
-        'Write automated tests with Vitest and Playwright, with linting, type-checking and technical documentation.',
-        'Carry out accessibility, visual and performance QA and security hardening, and plan for deployment.',
-        'Use AI-assisted development tools (Claude Code, Codex) as part of day-to-day development.',
-        'Co-develop the platform with a second developer; now onboarding the first five students, from three families.',
-      ],
+      highlights: ['Use AI-assisted development tools (Claude Code, Codex) as part of day-to-day development.'],
+      relatedProject: 'learnthrive-platform',
       skills: [
         'typescript',
         'react',
@@ -144,7 +139,7 @@ const raw = {
         'Authentication and sessions, with role-based permissions.',
         'Domain and repository layers in an npm workspace (monorepo).',
         'Automated tests with Vitest and Playwright; linting, type-checking and technical documentation.',
-        'Accessibility, visual and performance QA, and security hardening.',
+        'Accessibility, visual and performance QA, and security hardening, with deployment planned.',
       ],
       skills: [
         'typescript',
@@ -161,11 +156,8 @@ const raw = {
         'tech-docs',
       ],
       extraTech: ['npm workspaces (monorepo)'],
-      caseStudy: {
-        what: "LearnThrive Tuition's tutoring platform in one codebase: a public website, authenticated areas for tutors, clients and students, and a browser-based real-time classroom.",
-        role: 'Head of Research & Development. I lead research, prototyping and technical planning, and co-develop the platform with a second developer.',
-        outcome: 'Now onboarding the first five students, from three families.',
-      },
+      role: 'Head of Research & Development. I lead research, prototyping and technical planning, and co-develop the platform with a second developer.',
+      outcome: 'Now onboarding the first five students, from three families.',
     },
     {
       id: 'thorpe-park',
@@ -191,7 +183,7 @@ const raw = {
       org: 'University of Roehampton',
       period: 'Oct to Dec 2024, Oct to Dec 2025, Jan to Apr 2026, summer 2026',
       sort: 202606,
-      summary: 'Supported lab classes of 20+ students across four modules.',
+      summary: 'Lab support across four modules.',
       highlights: [
         'Supported classes of 20+ students in Software Development 1, Software Development 3, Mathematics for Computer Science and Data Science.',
         'Gave debugging support to students working in Python and JavaScript, explaining technical concepts one-to-one and to the whole class.',
@@ -214,15 +206,10 @@ const raw = {
       highlights: [
         'Integrated hardware and software, with database-backed functionality and structured data.',
         'Tested and evaluated the system, and documented the work.',
-        'Awarded 75/100 as the final-year project.',
       ],
       extraTech: ['Raspberry Pi', 'Local AI voice assistant', 'Laptop-hosted dashboard', 'Database-backed'],
       links: [{ label: 'Code on GitHub (RetroWeb)', href: 'https://github.com/AlviHossain97/RetroWeb' }],
-      caseStudy: {
-        what: 'A unified Raspberry Pi retro gaming and media console, with a streamed, laptop-hosted dashboard and a local AI voice assistant.',
-        role: 'Built PiStation as my final-year project at the University of Roehampton: integrated the hardware and software, tested and evaluated the system, and documented the work.',
-        outcome: 'Awarded 75/100. Code is on GitHub as RetroWeb.',
-      },
+      outcome: 'Awarded 75/100.',
     },
     {
       id: 'tutor',
@@ -255,12 +242,6 @@ const raw = {
       ],
       skills: ['python', 'apis', 'debugging'],
       extraTech: ['Nextcord', 'Cogs', 'Background workers'],
-      caseStudy: {
-        what: 'A modular general-purpose Discord bot written in Python with Nextcord. Commands are organised in cogs, behind a service-oriented design.',
-        role: 'Built it: commands, external API integrations with caching, background workers for scheduled tasks, persistent storage and per-server configuration.',
-        outcome:
-          'A working bot with reminders, polls, moderation, AFK and utility commands, quotes, per-server configuration and persistent storage.',
-      },
     },
     {
       id: 'data-pipeline',
@@ -297,8 +278,8 @@ const raw = {
       org: 'University of Roehampton',
       period: 'Sep 2022 to 2026',
       sort: 202209,
-      summary:
-        'Final-year project: PiStation, a Raspberry Pi retro gaming and media console with a local AI voice assistant, awarded 75/100.',
+      summary: 'Final-year project: PiStation.',
+      relatedProject: 'pistation',
       modules: [
         'Software Development',
         'Artificial Intelligence',

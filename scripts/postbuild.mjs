@@ -61,7 +61,7 @@ try {
   await page.screenshot({ path: join(dist, 'og.png') });
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await open('/');
+  await open('/cv/');
   await page.emulateMedia({ media: 'print' });
   await page.pdf({
     path: join(dist, PDF_FILE),

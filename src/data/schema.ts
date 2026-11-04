@@ -29,12 +29,6 @@ export const SkillSchema = z.strictObject({
   group: id,
 });
 
-export const CaseStudySchema = z.strictObject({
-  what: z.string().min(1),
-  role: z.string().min(1),
-  outcome: z.string().min(1),
-});
-
 export const EntrySchema = z.strictObject({
   id,
   kind: z.enum(['work', 'education', 'project']),
@@ -53,8 +47,14 @@ export const EntrySchema = z.strictObject({
   skills: z.array(id).default([]),
   /** Extra tech tags that are not in the skills list. */
   extraTech: z.array(z.string().min(1)).default([]),
+  /** Featured projects get a case-study card with a diagram. Projects only. */
   featured: z.boolean().default(false),
-  caseStudy: CaseStudySchema.optional(),
+  /** Featured only: my part, when it adds something the summary and highlights do not say. */
+  role: z.string().min(1).optional(),
+  /** Featured only: a stated result, when the CV gives one. */
+  outcome: z.string().min(1).optional(),
+  /** Entry id of a project this entry points to (timeline shows a link instead of repeating it). */
+  relatedProject: id.optional(),
   /** Education only: collapsed by default in the UI. */
   modules: z.array(z.string().min(1)).default([]),
   links: z.array(LinkSchema).default([]),
@@ -91,6 +91,7 @@ export const CvSchema = z
     const groupIds = new Set(cv.skillGroups.map((g) => g.id));
     const skillIds = new Set(cv.skills.map((s) => s.id));
     const entryIds = new Set<string>();
+    const projectIds = new Set(cv.entries.filter((e) => e.kind === 'project').map((e) => e.id));
     if (skillIds.size !== cv.skills.length) ctx.addIssue({ code: 'custom', message: 'duplicate skill id' });
     for (const s of cv.skills) {
       if (!groupIds.has(s.group)) ctx.addIssue({ code: 'custom', message: `skill ${s.id}: unknown group ${s.group}` });
@@ -100,12 +101,14 @@ export const CvSchema = z
         ctx.addIssue({ code: 'custom', message: `entry ${e.id}: period and sort must both be set (or both omitted)` });
       if (e.sort !== undefined && e.period === undefined)
         ctx.addIssue({ code: 'custom', message: `entry ${e.id}: sort without a period` });
-      if (e.featured && !e.caseStudy)
-        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: featured needs a caseStudy` });
-      if (e.caseStudy && e.kind !== 'project')
-        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: caseStudy is for projects` });
+      if ((e.featured || e.role || e.outcome) && e.kind !== 'project')
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: featured, role and outcome are for projects` });
+      if ((e.role || e.outcome) && !e.featured)
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: role and outcome need featured` });
       if (entryIds.has(e.id)) ctx.addIssue({ code: 'custom', message: `duplicate entry id ${e.id}` });
       entryIds.add(e.id);
+      if (e.relatedProject && !projectIds.has(e.relatedProject))
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: unknown relatedProject ${e.relatedProject}` });
       for (const sk of e.skills) {
         if (!skillIds.has(sk)) ctx.addIssue({ code: 'custom', message: `entry ${e.id}: unknown skill ${sk}` });
       }
