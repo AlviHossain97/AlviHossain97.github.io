@@ -229,8 +229,9 @@ test.describe('projects', () => {
     await page.goto('/');
     for (const id of ['learnthrive-platform', 'cirquon', 'pistation']) {
       const group = page.locator(`#case-${id} .diagram`);
-      await expect(group).toHaveAttribute('aria-labelledby', `dg-${id}-t`);
-      expect(((await page.locator(`#dg-${id}-t`).textContent()) ?? '').length).toBeGreaterThan(80);
+      await expect(group).toHaveAttribute('aria-describedby', `dg-${id}-d`);
+      expect(((await page.locator(`#dg-${id}-d`).textContent()) ?? '').length).toBeGreaterThan(80);
+      expect((await group.getAttribute('aria-label'))!.length).toBeLessThan(60);
     }
   });
 
@@ -379,11 +380,11 @@ test.describe('motion', () => {
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
     await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
     const toggle = page.getByRole('button', { name: 'Pause animation' });
-    await expect(toggle).toHaveAttribute('aria-pressed', 'false');
+    await expect(toggle).not.toHaveAttribute('aria-pressed');
     await toggle.click();
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
     await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'false');
-    await expect(page.getByRole('button', { name: 'Play animation' })).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.getByRole('button', { name: 'Play animation' })).toBeVisible();
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
     await expect(page.locator('.hero-field *')).toHaveCount(0);
@@ -417,6 +418,36 @@ test.describe('motion', () => {
     await page.waitForTimeout(2500);
     await expect(page.locator('iframe')).toHaveCount(0);
     expect(foreign).toEqual([]);
+  });
+
+  test('nothing focusable lives inside the decorative hero field', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await expect(
+      page.locator('.hero-field a, .hero-field button, .hero-field iframe, .hero-field [tabindex]'),
+    ).toHaveCount(0);
+  });
+
+  test('the mobile nav wraps instead of scrolling sideways', async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 700 });
+    await page.goto('/');
+    const nav = page.locator('.nav');
+    expect(await nav.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(0);
+  });
+
+  test('picking a skill on a small screen brings its evidence into view', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 700 });
+    await page.goto('/');
+    const btn = page.locator('#skills').getByRole('button', { name: /^LLM-assisted/ });
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
+    await expect(page.locator('#skill-evidence')).toBeInViewport();
+    await expect(page.locator('#skills [role="status"]')).toContainText('LLM-assisted development workflows');
+  });
+
+  test('deep link: #timeline/<filter> scrolls to the timeline', async ({ page }) => {
+    await page.goto('/#timeline/work');
+    await expect(page.locator('#timeline')).toBeInViewport({ ratio: 0.2 });
   });
 
   test('Save-Data keeps the static poster', async ({ browser }) => {

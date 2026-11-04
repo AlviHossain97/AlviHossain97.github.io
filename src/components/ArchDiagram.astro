@@ -53,11 +53,11 @@ const layouts = [
 ] as const;
 ---
 
-<div class="diagram" role="group" aria-labelledby={`dg-${uid}-t`}>
+<div class="diagram" role="group" aria-label={diagram.title} aria-describedby={`dg-${uid}-d`}>
   <figure>
-    <figcaption id={`dg-${uid}-t`} class="sr-only">
+    <p id={`dg-${uid}-d`} class="sr-only">
       {describe(diagram)}
-    </figcaption>
+    </p>
     {layouts.map((l) => (
       <svg class={l.cls} viewBox={`0 0 ${l.w} ${l.h}`} role="img" aria-hidden="true" focusable="false">
         {l.cols.map(({ g, x, y, h }, gi) => (

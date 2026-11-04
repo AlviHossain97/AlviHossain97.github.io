@@ -165,6 +165,7 @@ export default function Timeline({ dated, undated }: Props) {
       const m = /^timeline\/(\w+)$/.exec(h);
       if (m && FILTER_IDS.has(m[1] ?? '')) {
         setFilter(m[1] as Filter);
+        document.getElementById('timeline')?.scrollIntoView({ block: 'start' });
         return;
       }
       const entry = all.find((x) => x.id === h);

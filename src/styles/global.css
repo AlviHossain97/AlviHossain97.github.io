@@ -516,7 +516,7 @@ html[data-motion='on'] .tile:hover::before {
 }
 .counters {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
   gap: var(--s-4);
 }
 .counters dt {
@@ -771,7 +771,9 @@ html.no-js .panel {
 html.no-js .tl-list {
   --progress: 1;
 }
-html.no-js .motion-btn {
+html.no-js .motion-btn,
+html.no-js .filters,
+html.no-js .evidence {
   display: none;
 }
 .bullets {
@@ -1166,15 +1168,7 @@ a.tag:hover {
   .nav {
     order: 3;
     width: 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .nav::-webkit-scrollbar {
-    display: none;
-  }
-  .nav a {
-    flex: none;
+    flex-wrap: wrap;
   }
   .tl-kind {
     display: block;
@@ -1214,8 +1208,7 @@ a.tag:hover {
     top: var(--s-4);
   }
   .counters {
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: var(--s-3);
+    gap: var(--s-4) var(--s-3);
   }
   .tl-list {
     padding-left: var(--s-6);
@@ -1273,6 +1266,28 @@ html[data-motion='off'] .hero-name .c {
   .hero-scrim {
     display: none;
   }
+  .site-header,
+  .motion-btn {
+    background: Canvas;
+    backdrop-filter: none;
+  }
+  .motion-btn .bars i {
+    background: CanvasText;
+  }
+  .nav a[aria-current] {
+    border: 1px solid Highlight;
+  }
+  /* Pressed buttons: the system colours must be used explicitly or the label can vanish. */
+  .filter-btn[aria-pressed='true'],
+  .skill-btn[aria-pressed='true'] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .filter-btn[aria-pressed='true'] .count,
+  .skill-btn[aria-pressed='true'] .count {
+    color: HighlightText;
+  }
   .tl-list::before,
   .tl-list::after {
     background: CanvasText;
@@ -1283,7 +1298,8 @@ html[data-motion='off'] .hero-name .c {
 /* ---------- Print: never leave sections blank because a reveal has not run ---------- */
 @media print {
   [data-reveal],
-  .tl-item {
+  .tl-item,
+  .skill-group {
     opacity: 1 !important;
     transform: none !important;
   }

@@ -7,7 +7,6 @@ const toggle = document.querySelector<HTMLButtonElement>('[data-motion-toggle]')
 const sync = () => {
   if (!toggle) return;
   const reduced = document.documentElement.dataset.motion === 'off' && !isPaused();
-  toggle.setAttribute('aria-pressed', String(isPaused() || reduced));
   toggle.disabled = reduced;
   toggle.querySelector('[data-label]')!.textContent = reduced
     ? 'Animation off (system setting)'

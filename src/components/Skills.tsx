@@ -69,6 +69,19 @@ export default function Skills({ groups, skills }: Props) {
     if (root.current) reveal(root.current.querySelectorAll('.skill-group'));
   }, [group]);
 
+  // Picking a skill shows its evidence above the groups; on a small screen that may be off screen, so bring it
+  // into view (without moving focus) when it is not already visible.
+  const pick = (id: string) => {
+    setSelected(selected === id ? null : id);
+    if (selected === id) return;
+    requestAnimationFrame(() => {
+      const el = document.getElementById('skill-evidence');
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < 0 || r.bottom > innerHeight) el.scrollIntoView({ block: 'center', behavior: 'auto' });
+    });
+  };
+
   const current = skills.find((s) => s.id === selected);
   const visibleGroups = groups.filter((g) => group === 'all' || g.id === group);
   const visibleCount = skills.filter((s) => visibleGroups.some((g) => g.id === s.group)).length;
@@ -89,7 +102,7 @@ export default function Skills({ groups, skills }: Props) {
         ))}
       </div>
 
-      <div className="evidence" aria-live="polite">
+      <div className="evidence" id="skill-evidence">
         {current ? (
           <>
             <h3 id="skill-evidence-title" tabIndex={-1}>
@@ -116,7 +129,9 @@ export default function Skills({ groups, skills }: Props) {
       </div>
 
       <p className="sr-only" role="status" aria-live="polite">
-        Showing {visibleCount} skills.
+        {current
+          ? `${current.name}: ${current.uses.length} linked ${current.uses.length === 1 ? 'entry' : 'entries'}, listed below the filters.`
+          : `Showing ${visibleCount} skills.`}
       </p>
 
       {visibleGroups.map((g) => (
@@ -133,7 +148,8 @@ export default function Skills({ groups, skills }: Props) {
                       id={`${PREFIX}${s.id}`}
                       className="skill-btn"
                       aria-pressed={selected === s.id}
-                      onClick={() => setSelected(selected === s.id ? null : s.id)}
+                      aria-controls="skill-evidence"
+                      onClick={() => pick(s.id)}
                     >
                       {s.name}
                       <span className="count">
