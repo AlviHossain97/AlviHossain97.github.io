@@ -3,8 +3,6 @@ import { cv } from '../data/cv';
 
 const byId = (id: string) => cv.entries.find((e) => e.id === id);
 const role = byId('learnthrive-rd');
-const msc = byId('msc-qmul');
-const bsc = byId('bsc-roehampton');
 const openTo = cv.person.availability.replace(/^Open to (\w)/, (_, c: string) => c.toUpperCase());
 const pdf = `/${cv.site.pdfFile}`;
 ---
@@ -60,19 +58,6 @@ const pdf = `/${cv.site.pdfFile}`;
             <span class="live" aria-hidden="true"></span>
             {role?.title}, {role?.org}
           </dd>
-        </div>
-        <div>
-          <dt>Studying</dt>
-          <dd>
-            {msc?.title}, {msc?.org}{' '}
-            <span class="mono" style="color:var(--text-faint)">
-              ({msc?.period})
-            </span>
-          </dd>
-        </div>
-        <div>
-          <dt>Graduated</dt>
-          <dd>BSc (Hons) Computer Science, First-Class Honours, {bsc?.org}</dd>
         </div>
         <div>
           <dt>Open to</dt>

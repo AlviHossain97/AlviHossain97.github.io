@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -60,6 +60,7 @@ jobs:
             playwright-report/
             test-results/
             .lighthouseci/
+          include-hidden-files: true
           retention-days: 7
 
       - name: Upload site artifact
@@ -75,6 +76,9 @@ jobs:
     permissions:
       pages: write
       id-token: write
+    concurrency:
+      group: pages-deploy
+      cancel-in-progress: false
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

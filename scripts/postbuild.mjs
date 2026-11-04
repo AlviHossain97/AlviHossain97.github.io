@@ -7,9 +7,13 @@ import { readFile, rm, stat } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
+import { findIssues } from './privacy-rules.mjs';
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
 const TYPES = {
+  '.xml': 'application/xml',
+  '.txt': 'text/plain',
+  '.ico': 'image/x-icon',
   '.html': 'text/html',
   '.css': 'text/css',
   '.js': 'text/javascript',
@@ -43,13 +47,21 @@ try {
   if (!PDF_FILE) throw new Error('index.html has no PDF download link');
 
   const page = await browser.newPage({ viewport: { width: 1200, height: 630 } });
-  await page.goto(`${origin}/og-card/`, { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.fonts.ready);
+  // Any failed or 4xx/5xx request (missing font, CSS, page) would silently degrade the PDF / OG image: fail instead.
+  const bad = [];
+  page.on('response', (r) => r.status() >= 400 && bad.push(`${r.status()} ${r.url()}`));
+  page.on('requestfailed', (r) => bad.push(`failed ${r.url()}`));
+  const open = async (path) => {
+    const res = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
+    if (!res?.ok()) throw new Error(`postbuild: ${path} returned ${res?.status()}`);
+    await page.evaluate(() => document.fonts.ready);
+  };
+
+  await open('/og-card/');
   await page.screenshot({ path: join(dist, 'og.png') });
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.fonts.ready);
+  await open('/');
   await page.emulateMedia({ media: 'print' });
   await page.pdf({
     path: join(dist, PDF_FILE),
@@ -58,7 +70,17 @@ try {
     tagged: true,
     outline: true,
   });
-  const pages = (await readFile(join(dist, PDF_FILE), 'latin1')).match(/\/Type\s*\/Page[^s]/g)?.length ?? 0;
+  if (bad.length) throw new Error(`postbuild: assets failed to load: ${bad.join(', ')}`);
+
+  // The PDF is the .print-cv block: run the privacy / content rules over exactly that text.
+  const printed = await page.locator('.print-cv').evaluate((el) => el.textContent ?? '');
+  const issues = findIssues(printed);
+  if (issues.length)
+    throw new Error(`postbuild: privacy rules matched the CV text: ${issues.map((i) => i.rule).join(', ')}`);
+
+  const raw = await readFile(join(dist, PDF_FILE), 'latin1');
+  const count = /\/Type\s*\/Pages\b[^>]*?\/Count\s+(\d+)/.exec(raw)?.[1];
+  const pages = count ? Number(count) : (raw.match(/\/Type\s*\/Page\b(?!s)/g)?.length ?? 0);
   if (pages < 1 || pages > 2) throw new Error(`CV PDF has ${pages} pages; the print stylesheet should give 1-2`);
   console.log(`postbuild: ${pages}-page PDF`);
   console.log(`postbuild: wrote dist/${PDF_FILE} and dist/og.png`);

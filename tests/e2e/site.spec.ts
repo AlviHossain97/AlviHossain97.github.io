@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { findIssues } from '../../scripts/privacy-rules.mjs';
 
 const collectErrors = (page: Page) => {
   const errors: string[] = [];
@@ -48,13 +49,10 @@ test.describe('page', () => {
     }
   });
 
-  test('page text contains no phone number, postcode or home town', async ({ page }) => {
+  test('page HTML passes the shared privacy rules', async ({ page }) => {
     await page.goto('/');
-    const text = await page.evaluate(() => document.documentElement.outerHTML);
-    expect(text).not.toMatch(/(?<![\d.])(?:\+44\s?\(?0?\)?\s?|0)7\d{3}[\s-]?\d{6}(?!\d)/);
-    expect(text).not.toMatch(/\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/);
-    expect(text).not.toMatch(new RegExp(['felt', 'ham'].join(''), 'i'));
-    expect(text).not.toMatch(new RegExp(['production', 'ready'].join('[- ]'), 'i'));
+    const html = await page.evaluate(() => document.documentElement.outerHTML);
+    expect(findIssues(html)).toEqual([]);
   });
 });
 

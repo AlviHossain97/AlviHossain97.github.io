@@ -14,14 +14,14 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
 }));
 ---
 
-<div class="print-cv">
+<div class="print-cv" data-nosnippet>
   <header>
     <h1>{cv.person.name}</h1>
     <p class="pc-headline">{cv.person.positioning.join(' · ')}</p>
     <p class="pc-contact">
-      <span>{cv.contact.email}</span>
-      <span>{displayUrl(cv.contact.linkedin.href)}</span>
-      <span>{displayUrl(cv.contact.github.href)}</span>
+      <a href={`mailto:${cv.contact.email}`}>{cv.contact.email}</a>
+      <a href={cv.contact.linkedin.href}>{displayUrl(cv.contact.linkedin.href)}</a>
+      <a href={cv.contact.github.href}>{displayUrl(cv.contact.github.href)}</a>
       <span>{cv.person.location}</span>
       <span>{cv.person.workAuthorisation}</span>
     </p>
@@ -68,7 +68,9 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
           </ul>
         )}
         {e.links.map((l) => (
-          <p class="pc-org">Code: {displayUrl(l.href)}</p>
+          <p class="pc-org">
+            Code: <a href={l.href}>{displayUrl(l.href)}</a>
+          </p>
         ))}
       </div>
     ),

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { readHash } from '../lib/hash';
 
 export type Kind = 'work' | 'education' | 'project';
 type Filter = 'all' | 'work' | 'education' | 'projects';
@@ -44,7 +45,17 @@ function Chevron() {
   );
 }
 
-function Item({ e, open, onToggle }: { e: TimelineEntry; open: boolean; onToggle: (id: string) => void }) {
+function Item({
+  e,
+  open,
+  mounted,
+  onToggle,
+}: {
+  e: TimelineEntry;
+  open: boolean;
+  mounted: boolean;
+  onToggle: (id: string) => void;
+}) {
   const panelId = `panel-${e.id}`;
   const btnId = `btn-${e.id}`;
   const expandable = hasDetail(e);
@@ -80,8 +91,8 @@ function Item({ e, open, onToggle }: { e: TimelineEntry; open: boolean; onToggle
       </h3>
       <p className="tl-summary">{e.summary}</p>
       {expandable && (
-        <div className="panel" id={panelId} role="region" aria-labelledby={btnId} data-open={open}>
-          <div className="panel-inner" inert={!open}>
+        <div className="panel" id={panelId} data-open={open}>
+          <div className="panel-inner" inert={mounted && !open}>
             <div className="panel-content">
               {e.highlights.length > 0 && (
                 <ul className="bullets">
@@ -130,12 +141,14 @@ function Item({ e, open, onToggle }: { e: TimelineEntry; open: boolean; onToggle
 export default function Timeline({ dated, undated }: Props) {
   const [filter, setFilter] = useState<Filter>('all');
   const [open, setOpen] = useState<ReadonlySet<string>>(new Set());
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
   const all = useMemo(() => [...dated, ...undated], [dated, undated]);
 
   // Deep links: #timeline/<filter> sets the filter; #<entry-id> expands and scrolls to that entry.
   useEffect(() => {
     const apply = () => {
-      const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+      const h = readHash();
       const m = /^timeline\/(\w+)$/.exec(h);
       if (m && FILTER_IDS.has(m[1] ?? '')) {
         setFilter(m[1] as Filter);
@@ -151,7 +164,22 @@ export default function Timeline({ dated, undated }: Props) {
     };
     apply();
     addEventListener('hashchange', apply);
-    return () => removeEventListener('hashchange', apply);
+    // Links to an entry (e.g. from the Skills evidence list) must work even when the hash is already that value.
+    const onClick = (ev: MouseEvent) => {
+      const a = (ev.target as Element | null)?.closest?.('a[href^="#"]');
+      const id = a ? (a.getAttribute('href')?.slice(1) ?? '') : '';
+      const entry = all.find((x) => x.id === id);
+      if (!a || !entry || ev.defaultPrevented || ev.metaKey || ev.ctrlKey) return;
+      ev.preventDefault();
+      history.replaceState(null, '', `#${id}`);
+      apply();
+      requestAnimationFrame(() => document.getElementById(`btn-${id}`)?.focus({ preventScroll: true }));
+    };
+    document.addEventListener('click', onClick);
+    return () => {
+      removeEventListener('hashchange', apply);
+      document.removeEventListener('click', onClick);
+    };
   }, [all]);
 
   const choose = (f: Filter) => {
@@ -186,7 +214,11 @@ export default function Timeline({ dated, undated }: Props) {
             aria-pressed={filter === f.id}
             onClick={() => choose(f.id)}
           >
-            {f.label} <span className="count">{counts(f.id)}</span>
+            {f.label}{' '}
+            <span className="count">
+              {counts(f.id)}
+              <span className="sr-only"> entries</span>
+            </span>
           </button>
         ))}
       </div>
@@ -196,7 +228,7 @@ export default function Timeline({ dated, undated }: Props) {
       {shownDated.length > 0 && (
         <ol className="tl-list" aria-label="Timeline, newest first">
           {shownDated.map((e) => (
-            <Item key={e.id} e={e} open={open.has(e.id)} onToggle={toggle} />
+            <Item key={e.id} e={e} open={open.has(e.id)} mounted={mounted} onToggle={toggle} />
           ))}
         </ol>
       )}
@@ -205,7 +237,7 @@ export default function Timeline({ dated, undated }: Props) {
           <h3 className="tl-sub">Undated projects</h3>
           <ol className="tl-list" aria-label="Undated projects">
             {shownUndated.map((e) => (
-              <Item key={e.id} e={e} open={open.has(e.id)} onToggle={toggle} />
+              <Item key={e.id} e={e} open={open.has(e.id)} mounted={mounted} onToggle={toggle} />
             ))}
           </ol>
         </>

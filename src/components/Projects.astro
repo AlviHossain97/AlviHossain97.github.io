@@ -7,6 +7,8 @@ const others = cv.entries.filter((e) => e.kind === 'project' && !e.featured);
 // Featured order as briefed: LearnThrive platform, Cirquon, PiStation.
 const order = ['learnthrive-platform', 'cirquon', 'pistation'];
 featured.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
+if (featured.some((e) => !order.includes(e.id)))
+  throw new Error('Projects.astro: every featured project must be listed in `order`');
 ---
 
 <section class="section" id="projects" aria-labelledby="projects-title">
@@ -110,9 +112,13 @@ featured.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
               <ul class="tags">
                 {tagsFor(e).map((t) => (
                   <li>
-                    <a class="tag" href={`#skills/${t.skillId}`}>
-                      {t.label}
-                    </a>
+                    {t.skillId ? (
+                      <a class="tag" href={`#skills/${t.skillId}`}>
+                        {t.label}
+                      </a>
+                    ) : (
+                      <span class="tag">{t.label}</span>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -126,8 +132,9 @@ featured.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
 
 <script>
   // Deep links: #case-<id> opens that case study.
+  import { readHash } from '../lib/hash';
   const openFromHash = () => {
-    const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    const el = document.getElementById(readHash());
     if (el instanceof HTMLDetailsElement) {
       el.open = true;
       el.scrollIntoView({ block: 'start' });

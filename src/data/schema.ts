@@ -66,7 +66,7 @@ export const CvSchema = z
       url: z.url(),
       title: z.string(),
       description: z.string(),
-      pdfFile: z.string().regex(/\.pdf$/),
+      pdfFile: z.string().regex(/^[\w.-]+\.pdf$/, 'bare file name ending in .pdf'),
     }),
     person: z.strictObject({
       name: z.string(),
@@ -78,7 +78,7 @@ export const CvSchema = z
       positioning: z.array(z.string()).min(1),
     }),
     contact: z.strictObject({
-      email: z.email(),
+      email: z.literal('alvi997@outlook.com'),
       linkedin: LinkSchema,
       github: LinkSchema,
     }),
@@ -96,6 +96,14 @@ export const CvSchema = z
       if (!groupIds.has(s.group)) ctx.addIssue({ code: 'custom', message: `skill ${s.id}: unknown group ${s.group}` });
     }
     for (const e of cv.entries) {
+      if ((e.sort === undefined) !== (e.period === undefined) && e.kind !== 'project')
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: period and sort must both be set (or both omitted)` });
+      if (e.sort !== undefined && e.period === undefined)
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: sort without a period` });
+      if (e.featured && !e.caseStudy)
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: featured needs a caseStudy` });
+      if (e.caseStudy && e.kind !== 'project')
+        ctx.addIssue({ code: 'custom', message: `entry ${e.id}: caseStudy is for projects` });
       if (entryIds.has(e.id)) ctx.addIssue({ code: 'custom', message: `duplicate entry id ${e.id}` });
       entryIds.add(e.id);
       for (const sk of e.skills) {

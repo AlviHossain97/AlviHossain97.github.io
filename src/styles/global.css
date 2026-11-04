@@ -294,7 +294,7 @@ time,
   .hero-grid {
     grid-template-columns: minmax(0, 1fr) 22rem;
     gap: var(--s-8);
-    align-items: end;
+    align-items: start;
   }
 }
 .hero h1 {
@@ -352,11 +352,8 @@ time,
   gap: var(--s-4);
 }
 .now-panel dt {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
 }
 .now-panel dd {
   margin-top: 0.125rem;
@@ -440,7 +437,7 @@ noscript .no-js-note {
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text-muted);
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
   line-height: 1;
   text-decoration: none;
   transition:
@@ -509,7 +506,7 @@ a.tag:hover {
   top: 0.6rem;
   bottom: -0.4rem;
   width: 1px;
-  background: var(--line);
+  background: var(--line-strong);
 }
 .tl-item:last-child::before {
   display: none;
@@ -560,21 +557,18 @@ a.tag:hover {
   line-height: 1.25;
 }
 .tl-kind {
-  display: inline-block;
-  margin-right: var(--s-2);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
+  display: block;
+  margin-bottom: 0.125rem;
+  font-size: 0.8125rem;
   font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
   color: var(--text-faint);
-  vertical-align: 0.1em;
 }
 .tl-period {
   grid-column: 2;
   grid-row: 1;
-  font-size: 0.8rem;
-  color: var(--text-faint);
+  font-size: 0.875rem;
+  color: var(--text-muted);
   text-align: right;
   max-width: 17rem;
 }
@@ -752,10 +746,7 @@ button.tl-toggle:hover .tl-title {
   }
 }
 .case-body dt {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: 0.8125rem;
   color: var(--text-faint);
   padding-top: 0.2rem;
 }
@@ -818,12 +809,12 @@ button.tl-toggle:hover .tl-title {
   color: var(--text-faint);
 }
 .evidence {
-  margin-top: var(--s-7);
+  margin-bottom: var(--s-6);
   padding: var(--s-5);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--bg-raised);
-  min-height: 7rem;
+  min-height: 5.5rem;
 }
 .evidence h3 {
   font-size: var(--step-1);
@@ -940,10 +931,7 @@ details.modules .tags {
   border-bottom: 1px solid var(--line);
 }
 .contact-line dt {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  font-size: 0.8125rem;
   color: var(--text-faint);
 }
 .contact-line a {
@@ -993,4 +981,74 @@ details.modules .tags {
 .filter-btn[aria-pressed='true'] .count,
 .skill-btn[aria-pressed='true'] .count {
   color: var(--text-muted);
+}
+
+/* ---------- Review fixes ---------- */
+/* Focus rings stay visible inside clipped, animated panels. */
+.panel a:focus-visible,
+.case-body a:focus-visible,
+.panel .tag:focus-visible {
+  outline-offset: -2px;
+}
+.text-link {
+  display: inline-block;
+  min-height: 1.5rem;
+  padding-block: 0.25rem;
+}
+.skill-btn {
+  min-height: 2.5rem;
+}
+a.tag {
+  min-height: 2rem;
+}
+
+/* Small screens: the header scrolls away (no sticky chrome eating a 320px viewport) and the nav wraps. */
+@media (max-width: 40rem) {
+  html {
+    scroll-padding-top: var(--s-4);
+  }
+  .site-header {
+    position: static;
+  }
+  .nav {
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+  .hero {
+    padding-top: var(--s-6);
+  }
+  .cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .cta-row .btn {
+    justify-content: center;
+  }
+  .cta-row .btn-primary,
+  .cta-row .btn:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Windows High Contrast / forced colours: pressed and current states must not rely on tint. */
+@media (forced-colors: active) {
+  .filter-btn[aria-pressed='true'],
+  .skill-btn[aria-pressed='true'] {
+    border-width: 3px;
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+  .nav a[aria-current='true'] {
+    text-decoration: underline;
+  }
+  .tl-item[data-kind='work'] .tl-marker {
+    background: CanvasText;
+  }
+  .tl-item[data-current='true'] .tl-marker {
+    outline: 2px solid Highlight;
+  }
+  .skill-btn[data-unlinked='true'] {
+    border-style: dashed;
+  }
 }

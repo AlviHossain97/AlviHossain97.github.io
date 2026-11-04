@@ -21,15 +21,26 @@ const person = {
   '@context': 'https://schema.org',
   '@type': 'Person',
   name: cv.person.name,
-  url: cv.site.url,
+  url: `${cv.site.url}/`,
   jobTitle: cv.person.headline,
   description,
-  email: `mailto:${cv.contact.email}`,
   worksFor: { '@type': 'Organization', name: 'LearnThrive Tuition' },
-  alumniOf: { '@type': 'CollegeOrUniversity', name: 'University of Roehampton' },
-  affiliation: { '@type': 'CollegeOrUniversity', name: 'Queen Mary University of London' },
+  alumniOf: [
+    { '@type': 'CollegeOrUniversity', name: 'University of Roehampton' },
+    { '@type': 'CollegeOrUniversity', name: 'Queen Mary University of London' },
+  ],
   sameAs: [cv.contact.linkedin.href, cv.contact.github.href],
-  knowsAbout: cv.skills.map((s) => s.name),
+  // A short, topical list: the full skills list lives on the page.
+  knowsAbout: [
+    'Python',
+    'TypeScript',
+    'React',
+    'Next.js',
+    'Node.js',
+    'Machine learning',
+    'Data engineering',
+    'Full-stack web development',
+  ],
 };
 ---
 
@@ -40,7 +51,7 @@ const person = {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {!noindex && <link rel="canonical" href={canonical} />}
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="color-scheme" content="dark light" />
     <meta name="theme-color" content="#0b0f15" />
@@ -55,7 +66,11 @@ const person = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content={`${cv.person.name}: ${cv.person.positioning.join(', ')}`} />
+    <meta
+      property="og:image:alt"
+      content={`${cv.person.name}: Head of Research and Development at LearnThrive, MSc Advanced Computer Science at Queen Mary University of London, First-Class BSc Computer Science`}
+    />
+    <meta property="og:image:type" content="image/png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />

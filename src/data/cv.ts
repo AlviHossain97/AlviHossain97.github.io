@@ -8,9 +8,9 @@ import { CvSchema, type Cv } from './schema';
 const raw = {
   site: {
     url: 'https://alvihossain97.github.io',
-    title: 'Alvi Hossain · Computer Science, R&D and full-stack development',
+    title: 'Alvi Hossain | Computer Science MSc, R&D and full-stack developer',
     description:
-      'Alvi Hossain: Head of R&D at LearnThrive Tuition, MSc Advanced Computer Science at Queen Mary University of London, First-Class BSc Computer Science. CV, projects and skills.',
+      'Head of R&D at LearnThrive Tuition and MSc Advanced Computer Science student at Queen Mary University of London. First-Class BSc. CV and projects.',
     pdfFile: 'Alvi-Hossain-CV.pdf',
   },
   person: {
@@ -25,7 +25,7 @@ const raw = {
       'First-Class BSc Computer Science',
     ],
     profile:
-      'First-Class BSc (Hons) Computer Science graduate (University of Roehampton, 2026), now on a full-time MSc in Advanced Computer Science at Queen Mary University of London. Head of Research & Development at LearnThrive Tuition, leading research, prototyping and technical planning for a full-stack tutoring platform built with Next.js, React, TypeScript, Node.js, Express and Socket.IO, and tested with Vitest and Playwright. Builds Python tools and services, including Cirquon, a modular general-purpose Discord bot. Also a university lab demonstrator and online tutor, with customer-facing work in high-footfall venues. Uses AI-assisted development tools (Claude Code, Codex) responsibly.',
+      'First-Class BSc (Hons) Computer Science graduate (University of Roehampton, 2026), now on a full-time MSc in Advanced Computer Science at Queen Mary University of London. Head of Research & Development at LearnThrive Tuition, leading research, prototyping and technical planning for a full-stack tutoring platform built with Next.js, React, TypeScript, Node.js, Express and Socket.IO. Builds Python tools and services, including Cirquon, a modular general-purpose Discord bot, and uses AI-assisted development tools (Claude Code, Codex) responsibly.',
   },
   contact: {
     email: 'alvi997@outlook.com',
@@ -134,7 +134,7 @@ const raw = {
       title: 'LearnThrive platform',
       org: 'LearnThrive Tuition',
       period: 'Sep 2026 to present',
-      sort: 202608,
+      sort: 202609,
       current: true,
       featured: true,
       summary:
@@ -216,7 +216,6 @@ const raw = {
         'Tested and evaluated the system, and documented the work.',
         'Awarded 75/100 as the final-year project.',
       ],
-      skills: ['tech-docs'],
       extraTech: ['Raspberry Pi', 'Local AI voice assistant', 'Laptop-hosted dashboard', 'Database-backed'],
       links: [{ label: 'Code on GitHub (RetroWeb)', href: 'https://github.com/AlviHossain97/RetroWeb' }],
       caseStudy: {
@@ -260,7 +259,7 @@ const raw = {
         what: 'A modular general-purpose Discord bot written in Python with Nextcord. Commands are organised in cogs, behind a service-oriented design.',
         role: 'Built it: commands, external API integrations with caching, background workers for scheduled tasks, persistent storage and per-server configuration.',
         outcome:
-          'A bot with reminders, polls, moderation, AFK and utility commands and quotes, plus error handling and health and diagnostic endpoints.',
+          'A working bot with reminders, polls, moderation, AFK and utility commands, quotes, per-server configuration and persistent storage.',
       },
     },
     {
@@ -280,7 +279,7 @@ const raw = {
       org: 'University project',
       summary: 'Prepared and pre-processed an image dataset, then trained and evaluated a classification model.',
       highlights: ["Measured performance with metrics and analysed the model's outputs."],
-      skills: ['ml', 'dataset-prep', 'model-eval', 'data-analysis'],
+      skills: ['ml', 'dataset-prep', 'model-eval'],
     },
     {
       id: 'web-project',
