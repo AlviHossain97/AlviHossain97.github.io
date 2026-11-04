@@ -75,6 +75,8 @@ export const CvSchema = z
       availability: z.string(),
       workAuthorisation: z.string(),
       profile: z.string(),
+      /** One factual sentence under the hero name. */
+      lede: z.string(),
       positioning: z.array(z.string()).min(1),
     }),
     contact: z.strictObject({

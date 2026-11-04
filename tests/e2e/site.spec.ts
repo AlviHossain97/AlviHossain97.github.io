@@ -389,20 +389,34 @@ test.describe('motion', () => {
     await expect(page.locator('.hero-field *')).toHaveCount(0);
   });
 
-  test('the 3D chunk is requested only after first paint', async ({ page }) => {
-    const requested: { url: string; t: number }[] = [];
-    const t0 = Date.now();
-    page.on(
-      'request',
-      (r) =>
-        /ConstellationField|NeuformBatchEffects/.test(r.url()) && requested.push({ url: r.url(), t: Date.now() - t0 }),
-    );
-    await page.goto('/', { waitUntil: 'commit' });
-    await expect(page.getByRole('heading', { level: 1, name: 'Alvi Hossain' })).toBeVisible();
-    await page.waitForLoadState('load');
-    expect(requested.length).toBe(0); // nothing 3D has been asked for yet at load
+  test('the 3D chunk is requested only after the page has loaded', async ({ page }) => {
+    let loaded = false;
+    const early: string[] = [];
+    const later: string[] = [];
+    page.on('request', (r) => {
+      if (!/StreamConvergenceBackground/.test(r.url())) return;
+      (loaded ? later : early).push(r.url());
+    });
+    page.once('load', () => (loaded = true));
+    await page.goto('/');
     await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
-    expect(requested.length).toBeGreaterThan(0);
+    expect(early, 'requested before the load event').toEqual([]);
+    expect(later.length).toBeGreaterThan(0);
+  });
+
+  test('the hero field makes no third-party requests (no CDN, no iframe)', async ({ page, baseURL }) => {
+    const origin = new URL(baseURL!).origin;
+    const foreign: string[] = [];
+    page.on('request', (r) => {
+      const url = r.url();
+      if (/^(data|blob|about):/.test(url) || url.startsWith(origin)) return;
+      foreign.push(url);
+    });
+    await page.goto('/');
+    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await page.waitForTimeout(2500);
+    await expect(page.locator('iframe')).toHaveCount(0);
+    expect(foreign).toEqual([]);
   });
 
   test('Save-Data keeps the static poster', async ({ browser }) => {
@@ -475,7 +489,8 @@ test.describe('motion', () => {
 });
 
 test.describe('hero legibility over the animated field', () => {
-  // Samples the real pixels behind each piece of hero text (text hidden, field running) and checks the worst case.
+  // Samples the real pixels behind each piece of hero text (text hidden, field running) over several frames,
+  // then compares the brightest (dark theme) or darkest (light theme) background pixel with the text's own colour.
   for (const scheme of ['dark', 'light'] as const) {
     test(`text contrast over the field, ${scheme}`, async ({ browser }) => {
       const ctx = await browser.newContext({ colorScheme: scheme, viewport: { width: 1280, height: 800 } });
@@ -483,27 +498,45 @@ test.describe('hero legibility over the animated field', () => {
       await page.goto('/');
       await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
       await page.waitForTimeout(1500);
-      await page.addStyleTag({ content: '.hero .container *{color:transparent!important;text-shadow:none!important}' });
       const targets = [
         { sel: '.hero-name', min: 3 },
         { sel: '.hero-role', min: 3 },
         { sel: '.hero-lede', min: 4.5 },
       ];
-      const results: { sel: string; ratio: number }[] = [];
+      // Collect each target's text rectangle and real text luminance before hiding the text.
+      const info = await page.evaluate(
+        (sels) => {
+          const lin = (v: number) => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+          const probe = document.createElement('canvas');
+          probe.width = probe.height = 1;
+          const g = probe.getContext('2d')!;
+          return sels.map((sel) => {
+            const el = document.querySelector(sel)!;
+            const r = document.createRange();
+            r.selectNodeContents(el);
+            const b = r.getBoundingClientRect();
+            g.clearRect(0, 0, 1, 1);
+            g.fillStyle = getComputedStyle(el).color;
+            g.fillRect(0, 0, 1, 1);
+            const [R, G, B] = g.getImageData(0, 0, 1, 1).data;
+            return {
+              sel,
+              box: { x: b.x, y: b.y, width: b.width, height: b.height },
+              textL: 0.2126 * lin(R!) + 0.7152 * lin(G!) + 0.0722 * lin(B!),
+            };
+          });
+        },
+        targets.map((t) => t.sel),
+      );
+      await page.addStyleTag({ content: '.hero .container *{color:transparent!important;text-shadow:none!important}' });
+      const dark = scheme === 'dark';
       for (const t of targets) {
-        // Measure the rectangle the text really occupies, not its (wider) block.
-        const box = await page.evaluate((sel) => {
-          const r = document.createRange();
-          r.selectNodeContents(document.querySelector(sel)!);
-          const b = r.getBoundingClientRect();
-          return { x: b.x, y: b.y, width: b.width, height: b.height };
-        }, t.sel);
-        const fg = scheme;
-        const worst = { l: fg === 'dark' ? 0 : 1 };
-        for (let frame = 0; frame < 3; frame++) {
+        const { box, textL } = info.find((i) => i.sel === t.sel)!;
+        let worst = dark ? 0 : 1;
+        for (let frame = 0; frame < 6; frame++) {
           const png = await page.screenshot({ clip: box });
           const l = await page.evaluate(
-            async ({ b64, dark }) => {
+            async ({ b64, isDark }) => {
               const img = new Image();
               img.src = `data:image/png;base64,${b64}`;
               await img.decode();
@@ -514,22 +547,19 @@ test.describe('hero legibility over the animated field', () => {
               g.drawImage(img, 0, 0);
               const d = g.getImageData(0, 0, c.width, c.height).data;
               const lin = (v: number) => ((v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
-              let ext = dark ? 0 : 1;
+              let ext = isDark ? 0 : 1;
               for (let i = 0; i < d.length; i += 4) {
                 const L = 0.2126 * lin(d[i]!) + 0.7152 * lin(d[i + 1]!) + 0.0722 * lin(d[i + 2]!);
-                ext = dark ? Math.max(ext, L) : Math.min(ext, L);
+                ext = isDark ? Math.max(ext, L) : Math.min(ext, L);
               }
               return ext;
             },
-            { b64: png.toString('base64'), dark: fg === 'dark' },
+            { b64: png.toString('base64'), isDark: dark },
           );
-          worst.l = fg === 'dark' ? Math.max(worst.l, l) : Math.min(worst.l, l);
-          await page.waitForTimeout(400);
+          worst = dark ? Math.max(worst, l) : Math.min(worst, l);
+          await page.waitForTimeout(300);
         }
-        // Text colours: --text is near-white in dark, near-black in light.
-        const textL = fg === 'dark' ? 0.92 : 0.02;
-        const ratio = fg === 'dark' ? (textL + 0.05) / (worst.l + 0.05) : (worst.l + 0.05) / (textL + 0.05);
-        results.push({ sel: t.sel, ratio });
+        const ratio = dark ? (textL + 0.05) / (worst + 0.05) : (worst + 0.05) / (textL + 0.05);
         expect(ratio, `${t.sel} (${scheme}) worst-case contrast ${ratio.toFixed(2)}`).toBeGreaterThanOrEqual(t.min);
       }
       await ctx.close();

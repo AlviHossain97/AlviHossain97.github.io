@@ -49,8 +49,13 @@ const EASE = [0.16, 1, 0.3, 1] as const; // exponential ease-out
 /** Fade and rise elements into view once, staggered within each batch. Nothing is hidden unless motion is on. */
 export function reveal(els: Iterable<Element>): void {
   if (!motionOn()) return;
-  const list = [...els].filter((el): el is HTMLElement => el instanceof HTMLElement && !el.dataset.revealed);
-  for (const el of list) el.style.opacity = '0';
+  const list = [...els].filter(
+    (el): el is HTMLElement => el instanceof HTMLElement && !el.dataset.revealed && !el.dataset.pending,
+  );
+  for (const el of list) {
+    el.style.opacity = '0';
+    el.dataset.pending = '1';
+  }
   let batch = 0;
   inView(
     list,

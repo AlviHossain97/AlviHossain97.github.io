@@ -1,18 +1,18 @@
 ---
 import { cv } from '../data/cv';
 const links = [
-  ['Timeline', '#timeline'],
-  ['Projects', '#projects'],
-  ['Skills', '#skills'],
-  ['Education', '#education'],
-  ['Contact', '#contact'],
+  ['Timeline', '/#timeline'],
+  ['Projects', '/#projects'],
+  ['Skills', '/#skills'],
+  ['Education', '/#education'],
+  ['Contact', '/#contact'],
   ['CV', '/cv/'],
 ] as const;
 ---
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" href="#top" aria-label={`${cv.person.name}, back to top`}>
+    <a class="brand" href="/#top" aria-label={`${cv.person.name}, back to top`}>
       {cv.person.name}
     </a>
     <nav class="nav" aria-label="Sections">

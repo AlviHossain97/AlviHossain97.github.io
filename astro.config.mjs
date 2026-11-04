@@ -6,10 +6,7 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://alvihossain97.github.io',
   trailingSlash: 'ignore',
-  integrations: [
-    react(),
-    sitemap({ filter: (page) => !['/og-card', '/404', '/cv', '/lab'].some((p) => page.includes(p)) }),
-  ],
+  integrations: [react(), sitemap({ filter: (page) => !['/og-card', '/404', '/cv'].some((p) => page.includes(p)) })],
   devToolbar: { enabled: false },
   build: { inlineStylesheets: 'auto' },
 });

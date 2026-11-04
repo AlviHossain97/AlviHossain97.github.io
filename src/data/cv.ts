@@ -8,9 +8,9 @@ import { CvSchema, type Cv } from './schema';
 const raw = {
   site: {
     url: 'https://alvihossain97.github.io',
-    title: 'Alvi Hossain | Computer Science MSc, R&D and full-stack developer',
+    title: 'Alvi Hossain | MSc Computer Science, R&D and Full-Stack Developer',
     description:
-      'Head of R&D at LearnThrive Tuition and MSc Advanced Computer Science student at Queen Mary University of London. First-Class BSc. CV and projects.',
+      'Head of R&D at LearnThrive Tuition and MSc Advanced Computer Science student at Queen Mary University of London. First-Class BSc. Open to part-time work and 2027 graduate roles.',
     pdfFile: 'Alvi-Hossain-CV.pdf',
   },
   person: {
@@ -24,6 +24,7 @@ const raw = {
       'MSc Advanced Computer Science at QMUL',
       'First-Class BSc Computer Science',
     ],
+    lede: 'I lead R&D on the LearnThrive tutoring platform, wrote the Cirquon Discord bot in Python, and built the PiStation retro gaming console.',
     profile:
       'First-Class BSc (Hons) Computer Science graduate (University of Roehampton, 2026), now on a full-time MSc in Advanced Computer Science at Queen Mary University of London. Head of Research & Development at LearnThrive Tuition, leading research, prototyping and technical planning for a full-stack tutoring platform built with Next.js, React, TypeScript, Node.js, Express and Socket.IO. Builds Python tools and services, including Cirquon, a modular general-purpose Discord bot, and uses AI-assisted development tools (Claude Code, Codex) responsibly.',
   },

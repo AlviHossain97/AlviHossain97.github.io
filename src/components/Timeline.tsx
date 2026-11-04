@@ -131,7 +131,7 @@ function Item({
               {(e.related || e.links.length > 0) && (
                 <div className="link-row">
                   {e.related && (
-                    <a className="text-link" href={`#case-${e.related.id}`}>
+                    <a className="text-link" href={e.related.featured ? `#case-${e.related.id}` : `#${e.related.id}`}>
                       See the {e.related.title} case study
                     </a>
                   )}

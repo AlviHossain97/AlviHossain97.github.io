@@ -2,7 +2,7 @@
 
 Personal CV website for Alvi Hossain. A static [Astro](https://astro.build) site deployed to GitHub Pages at <https://alvihossain97.github.io>.
 
-No analytics, no cookies, no third-party requests. Fonts (Geist, Geist Mono) are self-hosted.
+No analytics, no cookies, no third-party requests (enforced by a test). Fonts (Geist, Geist Mono) are self-hosted.
 
 ## Architecture
 
@@ -33,11 +33,12 @@ React is used only where interactivity needs it (timeline filters/expand/deep li
 
 ### 3D and motion
 
-- The hero background is ThreeUI Community's "Topo Field" (MIT, see `THIRD_PARTY_NOTICES.md`). It is raw WebGL: no `three.js` is bundled.
-- First paint is a static CSS poster. The field is a separate ~69 KB (gzip) chunk requested after `load` and an idle moment, then faded in.
-- It never starts for reduced motion, `Save-Data`, no WebGL, or low-power phones, and it is unmounted when the hero is offscreen, the tab is hidden, or the visitor presses **Pause animation** (kept across visits).
+- The hero background is ThreeUI Community's "Stream Convergence Background" (MIT, see `THIRD_PARTY_NOTICES.md`): one WebGL canvas drawn by a small fragment shader, with no `three.js`. It makes no network request of its own and uses no iframe.
+- **Not every ThreeUI component is like that.** Many (for example "Topo Field") render a sandboxed iframe that loads Tailwind, iconify, GSAP and fonts from public CDNs. Those would break the "no third-party requests" rule, so they are not used. A test fails if the hero makes any cross-origin request or adds an iframe.
+- First paint is a static CSS poster. The field is a separate chunk (size is checked by `npm run check:budget`), requested only after the `load` event and an idle moment, then faded in.
+- It never starts for reduced motion, `Save-Data`, no WebGL, or low-power touch devices, and it is unmounted when the hero is offscreen, the tab is hidden, or the visitor presses **Pause animation** (kept across visits).
 - Reveals, counters, the scroll-drawn timeline rail, spotlight tiles and magnetic buttons all read one switch (`src/lib/motion.ts`, mirrored as `<html data-motion>`), so reduced motion is fully static.
-- `npm run check:budget` fails CI if the lazy chunk exceeds 75 KB or the other JavaScript exceeds 90 KB (gzip).
+- `npm run check:budget` fails CI if the lazy chunk exceeds 10 KB or the other JavaScript exceeds 90 KB (gzip).
 
 ### Deep links
 

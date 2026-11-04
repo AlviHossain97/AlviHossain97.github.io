@@ -2,8 +2,9 @@
  * Architecture diagrams for the three featured projects.
  *
  * Every box is a fact from docs/master-cv.md (quoted in the comment next to it). The diagrams show what each
- * project contains and how the CV groups it. They deliberately draw no arrows between components, because the
- * CV does not say how data flows between them: inventing flows would be inventing claims.
+ * project contains. Where the CV lists things together without saying how they relate, the diagram keeps them in
+ * a neutral group ("Features", "Also in the project") rather than inventing a structure, and it draws no arrows,
+ * because the CV does not say how data flows between components.
  */
 export interface DiagramGroup {
   label: string;
@@ -14,8 +15,6 @@ export interface Diagram {
   /** Entry id this diagram belongs to. */
   id: string;
   title: string;
-  /** Spoken description for screen readers. */
-  desc: string;
   caption: string;
   groups: DiagramGroup[];
   /** Optional dashed link between two groups (by index), used only where the CV states a relationship. */
@@ -26,7 +25,6 @@ export const diagrams: Diagram[] = [
   {
     id: 'learnthrive-platform',
     title: 'What the LearnThrive platform covers',
-    desc: 'Three groups. Surfaces: public website, tutor area, client area, student area and a browser-based real-time classroom. Features: scheduling and calendar workflows, lessons and attendance, lesson reports, notifications, authentication and sessions, role-based permissions. Structure: domain layer, repository layer, npm workspace monorepo.',
     caption: 'Taken from my CV. Boxes group related parts; they are not a deployment or data-flow diagram.',
     groups: [
       {
@@ -64,22 +62,30 @@ export const diagrams: Diagram[] = [
   },
   {
     id: 'cirquon',
-    title: 'How Cirquon is organised',
-    desc: 'Three groups. Commands in cogs: reminders, polls, moderation, AFK, utility commands and quotes. Services and storage: HTTP clients for external APIs, caching, background workers for scheduled tasks, per-server guild configuration and persistent storage. Operations: error handling, health endpoints and diagnostic endpoints.',
-    caption: 'Components named in my CV, grouped the way it describes them. No data flow is implied.',
+    title: 'What Cirquon includes',
+    caption: 'Components named in my CV. The CV lists them together, so no structure or data flow is implied.',
     groups: [
       {
-        label: 'Commands, in cogs',
+        label: 'Features',
         tone: 'cyan',
-        items: ['Reminders', 'Polls', 'Moderation', 'AFK', 'Utility commands', 'Quotes'],
+        items: [
+          'Reminders', // "reminders, polls, moderation, AFK and utility commands, quotes"
+          'Polls',
+          'Moderation',
+          'AFK commands',
+          'Utility commands',
+          'Quotes',
+          'Per-server (guild) configuration',
+        ],
       },
       {
-        label: 'Services and storage',
+        label: 'Under the hood',
         items: [
+          'Commands organised in cogs', // "commands organised in cogs and a service-oriented design"
+          'Service-oriented design',
           'HTTP clients for external APIs', // "external APIs through HTTP clients with caching"
           'Caching',
           'Background workers', // "background workers for scheduled tasks"
-          'Per-server (guild) configuration',
           'Persistent storage',
         ],
       },
@@ -93,13 +99,12 @@ export const diagrams: Diagram[] = [
   {
     id: 'pistation',
     title: 'What PiStation is made of',
-    desc: 'Two devices. A Raspberry Pi console with retro gaming, media, a local AI voice assistant and database-backed functionality with structured data. A laptop that hosts the dashboard, which is streamed. The project was integrated across hardware and software, tested, evaluated and documented.',
     caption: 'Taken from my CV. The dashed line marks the streamed, laptop-hosted dashboard.',
     groups: [
       {
         label: 'Raspberry Pi console',
         tone: 'cyan',
-        items: ['Retro gaming', 'Media', 'Local AI voice assistant', 'Database-backed functionality'],
+        items: ['Retro gaming', 'Media', 'Local AI voice assistant'],
       },
       {
         label: 'Laptop',
@@ -107,10 +112,20 @@ export const diagrams: Diagram[] = [
         items: ['Hosts the dashboard'],
       },
       {
-        label: 'Process',
-        items: ['Hardware and software integrated', 'Tested and evaluated', 'Documented'],
+        label: 'Also in the project',
+        items: [
+          'Database-backed functionality', // "database-backed functionality and structured data"
+          'Structured data',
+          'Hardware and software integrated',
+          'Tested and evaluated',
+          'Documented',
+        ],
       },
     ],
     link: { from: 0, to: 1, label: 'streamed dashboard' },
   },
 ];
+
+/** Spoken description, generated from the groups so it cannot drift from what is drawn. */
+export const describe = (d: Diagram): string =>
+  `${d.title}. ${d.groups.map((g) => `${g.label}: ${g.items.join(', ')}.`).join(' ')}`;

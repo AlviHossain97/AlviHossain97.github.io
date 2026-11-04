@@ -17,22 +17,22 @@ let n = 0;
     <div class="hero-inner">
       <h1 id="hero-title" class="hero-name" aria-label={cv.person.name}>
         <span aria-hidden="true">
-          {words.map((w) => (
-            <span class="w">
-              {[...w].map((ch) => (
-                <span class="c" style={`--i:${n++}`}>
-                  {ch}
-                </span>
-              ))}
-            </span>
+          {words.map((w, wi) => (
+            <Fragment>
+              {wi > 0 && ' '}
+              <span class="w">
+                {[...w].map((ch) => (
+                  <span class="c" style={`--i:${n++}`}>
+                    {ch}
+                  </span>
+                ))}
+              </span>
+            </Fragment>
           ))}
         </span>
       </h1>
       <p class="hero-role">{cv.person.headline}</p>
-      <p class="hero-lede">
-        I build the LearnThrive tutoring platform, Python tools such as the Cirquon Discord bot, and a Raspberry Pi
-        retro console.
-      </p>
+      <p class="hero-lede">{cv.person.lede}</p>
       <div class="cta-row">
         <a class="btn btn-primary" href={pdf} download data-magnetic>
           <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
