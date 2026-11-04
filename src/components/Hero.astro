@@ -5,35 +5,50 @@ const byId = (id: string) => cv.entries.find((e) => e.id === id);
 const role = byId('learnthrive-rd');
 const msc = byId('msc-qmul');
 const bsc = byId('bsc-roehampton');
+const openTo = cv.person.availability.replace(/^Open to (\w)/, (_, c: string) => c.toUpperCase());
 const pdf = `/${cv.site.pdfFile}`;
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
   <div class="container hero-grid">
     <div>
-      <h1 id="hero-title" class="rise" style="--i:0">{cv.person.name}</h1>
+      <h1 id="hero-title" class="rise" style="--i:0">
+        {cv.person.name}
+      </h1>
       <ul class="positioning rise" style="--i:1" aria-label="Positioning">
-        {cv.person.positioning.map((p) => <li>{p}</li>)}
+        {cv.person.positioning.map((p) => (
+          <li>{p}</li>
+        ))}
       </ul>
-      <p class="profile rise" style="--i:2">{cv.person.profile}</p>
-      <div class="cta-row rise" style="--i:3">
+      <div class="cta-row rise" style="--i:2">
         <a class="btn btn-primary" href={pdf} download>
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"></path></svg>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"></path>
+          </svg>
           Download CV (PDF)
         </a>
         <a class="btn" href={cv.contact.github.href} rel="me">
           GitHub
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 17 17 7M8 7h9v9"></path>
+          </svg>
         </a>
         <a class="btn" href={cv.contact.linkedin.href} rel="me">
           LinkedIn
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"></path></svg>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M7 17 17 7M8 7h9v9"></path>
+          </svg>
         </a>
         <a class="btn" href={`mailto:${cv.contact.email}`}>
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4zM4 7l8 6 8-6"></path></svg>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h16v12H4zM4 7l8 6 8-6"></path>
+          </svg>
           Email
         </a>
       </div>
+      <p class="profile rise" style="--i:3">
+        {cv.person.profile}
+      </p>
     </div>
 
     <aside class="now-panel rise" style="--i:4" aria-labelledby="now-title">
@@ -41,11 +56,19 @@ const pdf = `/${cv.site.pdfFile}`;
       <dl>
         <div>
           <dt>Now</dt>
-          <dd><span class="live" aria-hidden="true"></span>{role?.title}, {role?.org}</dd>
+          <dd>
+            <span class="live" aria-hidden="true"></span>
+            {role?.title}, {role?.org}
+          </dd>
         </div>
         <div>
           <dt>Studying</dt>
-          <dd>{msc?.title}, {msc?.org} <span class="mono" style="color:var(--text-faint)">({msc?.period})</span></dd>
+          <dd>
+            {msc?.title}, {msc?.org}{' '}
+            <span class="mono" style="color:var(--text-faint)">
+              ({msc?.period})
+            </span>
+          </dd>
         </div>
         <div>
           <dt>Graduated</dt>
@@ -53,11 +76,13 @@ const pdf = `/${cv.site.pdfFile}`;
         </div>
         <div>
           <dt>Open to</dt>
-          <dd>{cv.person.availability.replace(/^Open to /, '')}</dd>
+          <dd>{openTo}</dd>
         </div>
         <div>
           <dt>Based</dt>
-          <dd>{cv.person.location}. {cv.person.workAuthorisation}.</dd>
+          <dd>
+            {cv.person.location}. {cv.person.workAuthorisation}.
+          </dd>
         </div>
       </dl>
     </aside>

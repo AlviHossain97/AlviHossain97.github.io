@@ -9,37 +9,35 @@ const edu = cv.entries.filter((e) => e.kind === 'education').sort((a, b) => (b.s
       <h2 id="education-title">Education</h2>
     </div>
     <div>
-      {
-        edu.map((e) => (
-          <article class="edu" id={`edu-${e.id}`}>
-            <div class="edu-head">
-              <div>
-                <h3>{e.title}</h3>
-                <p class="org">{e.org}</p>
-              </div>
-              <p class="period mono">{e.period}</p>
+      {edu.map((e) => (
+        <article class="edu" id={`edu-${e.id}`}>
+          <div class="edu-head">
+            <div>
+              <h3>{e.title}</h3>
+              <p class="org">{e.org}</p>
             </div>
-            <p class="summary">{e.summary}</p>
-            {e.modules.length > 0 && (
-              <details class="modules">
-                <summary>
-                  Modules included
-                  <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m6 9 6 6 6-6" />
-                  </svg>
-                </summary>
-                <ul class="tags">
-                  {e.modules.map((m) => (
-                    <li>
-                      <span class="tag">{m}</span>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            )}
-          </article>
-        ))
-      }
+            <p class="period mono">{e.period}</p>
+          </div>
+          <p class="summary">{e.summary}</p>
+          {e.modules.length > 0 && (
+            <details class="modules">
+              <summary>
+                Modules included
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </summary>
+              <ul class="tags">
+                {e.modules.map((m) => (
+                  <li>
+                    <span class="tag">{m}</span>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+        </article>
+      ))}
       <p class="edu-note">{cv.notes.join(' ')}</p>
     </div>
   </div>

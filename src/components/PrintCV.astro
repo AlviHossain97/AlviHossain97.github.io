@@ -32,76 +32,68 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
   <p>{cv.person.availability}</p>
 
   <h2>Experience</h2>
-  {
-    sortNewest(work).map((e) => (
-      <div class="pc-entry">
-        <div class="pc-row">
-          <h3>
-            {e.title} <span class="pc-org">· {orgLine(e)}</span>
-          </h3>
-          <span class="pc-when">{e.period}</span>
-        </div>
-        <ul>
-          {e.highlights.map((h) => (
-            <li>{h}</li>
-          ))}
-        </ul>
+  {sortNewest(work).map((e) => (
+    <div class="pc-entry">
+      <div class="pc-row">
+        <h3>
+          {e.title} <span class="pc-org">· {orgLine(e)}</span>
+        </h3>
+        <span class="pc-when">{e.period}</span>
       </div>
-    ))
-  }
+      <ul>
+        {e.highlights.map((h) => (
+          <li>{h}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
 
   <h2>Projects</h2>
-  {
-    [...sortNewest(projects.filter((p) => p.sort !== undefined)), ...projects.filter((p) => p.sort === undefined)].map(
-      (e) => (
-        <div class="pc-entry">
-          <div class="pc-row">
-            <h3>
-              {e.title}
-              {e.org ? <span class="pc-org"> · {e.org}</span> : null}
-            </h3>
-            <span class="pc-when">{e.period}</span>
-          </div>
-          <p>{e.summary}</p>
-          {e.highlights.length > 0 && (
-            <ul>
-              {e.highlights.map((h) => (
-                <li>{h}</li>
-              ))}
-            </ul>
-          )}
-          {e.caseStudy && <p class="pc-org">Outcome: {e.caseStudy.outcome}</p>}
-          {e.links.map((l) => (
-            <p class="pc-org">Code: {displayUrl(l.href)}</p>
-          ))}
-        </div>
-      ),
-    )
-  }
-
-  <h2>Technical skills</h2>
-  {
-    skillsByGroup.map((g) => (
-      <p class="pc-skill-row">
-        <strong>{g.label}:</strong> {g.names.join(', ')}
-      </p>
-    ))
-  }
-
-  <h2>Education</h2>
-  {
-    sortNewest(education).map((e) => (
+  {[...sortNewest(projects.filter((p) => p.sort !== undefined)), ...projects.filter((p) => p.sort === undefined)].map(
+    (e) => (
       <div class="pc-entry">
         <div class="pc-row">
           <h3>
-            {e.title} <span class="pc-org">· {e.org}</span>
+            {e.title}
+            {e.org ? <span class="pc-org"> · {e.org}</span> : null}
           </h3>
           <span class="pc-when">{e.period}</span>
         </div>
         <p>{e.summary}</p>
-        {e.modules.length > 0 && <p class="pc-org">Modules included: {e.modules.join(', ')}.</p>}
+        {e.highlights.length > 0 && (
+          <ul>
+            {e.highlights.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+        )}
+        {e.caseStudy && <p class="pc-org">Outcome: {e.caseStudy.outcome}</p>}
+        {e.links.map((l) => (
+          <p class="pc-org">Code: {displayUrl(l.href)}</p>
+        ))}
       </div>
-    ))
-  }
+    ),
+  )}
+
+  <h2>Technical skills</h2>
+  {skillsByGroup.map((g) => (
+    <p class="pc-skill-row">
+      <strong>{g.label}:</strong> {g.names.join(', ')}
+    </p>
+  ))}
+
+  <h2>Education</h2>
+  {sortNewest(education).map((e) => (
+    <div class="pc-entry">
+      <div class="pc-row">
+        <h3>
+          {e.title} <span class="pc-org">· {e.org}</span>
+        </h3>
+        <span class="pc-when">{e.period}</span>
+      </div>
+      <p>{e.summary}</p>
+      {e.modules.length > 0 && <p class="pc-org">Modules included: {e.modules.join(', ')}.</p>}
+    </div>
+  ))}
   <p class="pc-org">{cv.notes.join(' ')}</p>
 </div>

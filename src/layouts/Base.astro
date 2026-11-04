@@ -65,17 +65,20 @@ const person = {
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(person)} />}
 
     <script is:inline>
-      (function () {
-        var d = document.documentElement;
+      (() => {
+        const d = document.documentElement;
         d.classList.remove('no-js');
-        var t = null;
+        let t = null;
         try {
           t = localStorage.getItem('theme');
-        } catch (e) {}
+        } catch {
+          /* storage blocked: fall back to the OS preference */
+        }
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         d.dataset.theme = t;
-        var m = document.querySelector('meta[name="theme-color"]');
-        if (m) m.setAttribute('content', t === 'light' ? '#fbfaf7' : '#0b0f15');
+        document
+          .querySelector('meta[name="theme-color"]')
+          ?.setAttribute('content', t === 'light' ? '#fbfaf7' : '#0b0f15');
       })();
     </script>
   </head>

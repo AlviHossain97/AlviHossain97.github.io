@@ -31,7 +31,8 @@ import { cv } from '../data/cv';
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        background-image: linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
         background-size: 48px 48px;
       }
@@ -72,7 +73,9 @@ import { cv } from '../data/cv';
       <div>
         <h1>{cv.person.name}</h1>
         <ul>
-          {cv.person.positioning.map((p) => <li>{p}</li>)}
+          {cv.person.positioning.map((p) => (
+            <li>{p}</li>
+          ))}
         </ul>
       </div>
       <div class="foot">alvihossain97.github.io</div>

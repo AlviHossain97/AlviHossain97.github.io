@@ -6,13 +6,16 @@ import { z } from 'zod';
  *
  * Contact rule: the only external links allowed are email, LinkedIn and GitHub (profile or repos).
  */
-const ALLOWED_LINK = /^(mailto:alvi997@outlook\.com|https:\/\/(www\.)?linkedin\.com\/in\/alvihossain\/?|https:\/\/github\.com\/AlviHossain97(\/[\w.-]+)?\/?)$/;
+const ALLOWED_LINK =
+  /^(mailto:alvi997@outlook\.com|https:\/\/(www\.)?linkedin\.com\/in\/alvihossain\/?|https:\/\/github\.com\/AlviHossain97(\/[\w.-]+)?\/?)$/;
 
 const id = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'kebab-case id');
 
 export const LinkSchema = z.strictObject({
   label: z.string().min(1),
-  href: z.string().regex(ALLOWED_LINK, 'only email, linkedin.com/in/alvihossain and github.com/AlviHossain97 links are allowed'),
+  href: z
+    .string()
+    .regex(ALLOWED_LINK, 'only email, linkedin.com/in/alvihossain and github.com/AlviHossain97 links are allowed'),
 });
 
 export const SkillGroupSchema = z.strictObject({

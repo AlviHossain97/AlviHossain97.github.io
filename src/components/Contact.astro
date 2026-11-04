@@ -16,20 +16,20 @@ const rows = [
     </div>
     <div>
       <dl class="contact-links">
-        {
-          rows.map(([label, href, text]) => (
-            <div class="contact-line">
-              <dt>{label}</dt>
-              <dd>
-                <a href={href}>{text}</a>
-              </dd>
-            </div>
-          ))
-        }
+        {rows.map(([label, href, text]) => (
+          <div class="contact-line">
+            <dt>{label}</dt>
+            <dd>
+              <a href={href}>{text}</a>
+            </dd>
+          </div>
+        ))}
       </dl>
       <div class="cta-row" style="margin-top:var(--s-6)">
         <a class="btn btn-primary" href={`/${cv.site.pdfFile}`} download>
-          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"></path></svg>
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"></path>
+          </svg>
           Download CV (PDF)
         </a>
       </div>

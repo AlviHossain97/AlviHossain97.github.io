@@ -9,7 +9,15 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from '@playwright/test';
 
 const dist = fileURLToPath(new URL('../dist/', import.meta.url));
-const TYPES = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.json': 'application/json' };
+const TYPES = {
+  '.html': 'text/html',
+  '.css': 'text/css',
+  '.js': 'text/javascript',
+  '.woff2': 'font/woff2',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.json': 'application/json',
+};
 
 const server = createServer(async (req, res) => {
   try {
@@ -43,7 +51,16 @@ try {
   await page.goto(`${origin}/`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
   await page.emulateMedia({ media: 'print' });
-  await page.pdf({ path: join(dist, PDF_FILE), preferCSSPageSize: true, printBackground: false, tagged: true, outline: true });
+  await page.pdf({
+    path: join(dist, PDF_FILE),
+    preferCSSPageSize: true,
+    printBackground: false,
+    tagged: true,
+    outline: true,
+  });
+  const pages = (await readFile(join(dist, PDF_FILE), 'latin1')).match(/\/Type\s*\/Page[^s]/g)?.length ?? 0;
+  if (pages < 1 || pages > 2) throw new Error(`CV PDF has ${pages} pages; the print stylesheet should give 1-2`);
+  console.log(`postbuild: ${pages}-page PDF`);
   console.log(`postbuild: wrote dist/${PDF_FILE} and dist/og.png`);
 } finally {
   await browser.close();

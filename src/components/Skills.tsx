@@ -50,7 +50,13 @@ export default function Skills({ groups, skills }: Props) {
     <div>
       <div className="filters" role="group" aria-label="Filter skills by group">
         {[{ id: 'all', label: 'All' }, ...groups].map((g) => (
-          <button key={g.id} type="button" className="filter-btn" aria-pressed={group === g.id} onClick={() => setGroup(g.id)}>
+          <button
+            key={g.id}
+            type="button"
+            className="filter-btn"
+            aria-pressed={group === g.id}
+            onClick={() => setGroup(g.id)}
+          >
             {g.label}
           </button>
         ))}
@@ -84,7 +90,8 @@ export default function Skills({ groups, skills }: Props) {
         </section>
       ))}
       <span className="dashed-note">
-        Select a skill to see where I have used it. Dashed skills are on my CV but not yet tied to a role or project here.
+        Select a skill to see where I have used it. Dashed skills are on my CV but not yet tied to a role or project
+        here.
       </span>
 
       <div className="evidence" aria-live="polite">

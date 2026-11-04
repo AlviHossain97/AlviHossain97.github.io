@@ -94,16 +94,28 @@ const raw = {
       current: true,
       summary: "Leading research, prototyping and technical planning for LearnThrive Tuition's digital platform.",
       highlights: [
-        "Lead research, prototyping and technical planning for LearnThrive Tuition's digital platform.",
+        'Build the unified tutoring platform (see the case study under Projects).',
         'Write automated tests with Vitest and Playwright, with linting, type-checking and technical documentation.',
         'Carry out accessibility, visual and performance QA and security hardening, and plan for deployment.',
         'Use AI-assisted development tools (Claude Code, Codex) as part of day-to-day development.',
         'Co-develop the platform with a second developer; now onboarding the first five students, from three families.',
       ],
       skills: [
-        'typescript', 'react', 'nextjs', 'nodejs', 'express', 'socketio', 'full-stack',
-        'vitest', 'playwright', 'linting', 'type-checking', 'tech-docs',
-        'claude-code', 'codex', 'llm-workflows',
+        'typescript',
+        'react',
+        'nextjs',
+        'nodejs',
+        'express',
+        'socketio',
+        'full-stack',
+        'vitest',
+        'playwright',
+        'linting',
+        'type-checking',
+        'tech-docs',
+        'claude-code',
+        'codex',
+        'llm-workflows',
       ],
     },
     {
@@ -125,7 +137,8 @@ const raw = {
       sort: 202608,
       current: true,
       featured: true,
-      summary: 'A unified tutoring platform: public website, authenticated tutor, client and student areas, and a browser-based real-time classroom.',
+      summary:
+        'A unified tutoring platform: public website, authenticated tutor, client and student areas, and a browser-based real-time classroom.',
       highlights: [
         'Scheduling and calendar workflows, lessons, attendance, lesson reports and notifications.',
         'Authentication and sessions, with role-based permissions.',
@@ -134,8 +147,18 @@ const raw = {
         'Accessibility, visual and performance QA, and security hardening.',
       ],
       skills: [
-        'typescript', 'react', 'nextjs', 'nodejs', 'express', 'socketio', 'full-stack',
-        'vitest', 'playwright', 'linting', 'type-checking', 'tech-docs',
+        'typescript',
+        'react',
+        'nextjs',
+        'nodejs',
+        'express',
+        'socketio',
+        'full-stack',
+        'vitest',
+        'playwright',
+        'linting',
+        'type-checking',
+        'tech-docs',
       ],
       extraTech: ['npm workspaces (monorepo)'],
       caseStudy: {
@@ -186,7 +209,8 @@ const raw = {
       period: '2026',
       sort: 202605,
       featured: true,
-      summary: 'A Raspberry Pi retro gaming and media console with a streamed, laptop-hosted dashboard and a local AI voice assistant.',
+      summary:
+        'A Raspberry Pi retro gaming and media console with a streamed, laptop-hosted dashboard and a local AI voice assistant.',
       highlights: [
         'Integrated hardware and software, with database-backed functionality and structured data.',
         'Tested and evaluated the system, and documented the work.',
@@ -222,7 +246,8 @@ const raw = {
       title: 'Cirquon',
       org: 'General-purpose Discord bot',
       featured: true,
-      summary: 'A modular general-purpose Discord bot in Python (Nextcord), with commands organised in cogs and a service-oriented design.',
+      summary:
+        'A modular general-purpose Discord bot in Python (Nextcord), with commands organised in cogs and a service-oriented design.',
       highlights: [
         'Integrated external APIs through HTTP clients with caching, and ran background workers for scheduled tasks.',
         'Features include reminders, polls, moderation, AFK and utility commands, quotes and per-server (guild) configuration, with persistent storage.',
@@ -233,7 +258,8 @@ const raw = {
       caseStudy: {
         what: 'A modular general-purpose Discord bot written in Python with Nextcord. Commands are organised in cogs, behind a service-oriented design.',
         role: 'Built it: commands, external API integrations with caching, background workers for scheduled tasks, persistent storage and per-server configuration.',
-        outcome: 'A bot with reminders, polls, moderation, AFK and utility commands and quotes, plus error handling and health and diagnostic endpoints.',
+        outcome:
+          'A bot with reminders, polls, moderation, AFK and utility commands and quotes, plus error handling and health and diagnostic endpoints.',
       },
     },
     {
@@ -241,7 +267,8 @@ const raw = {
       kind: 'project',
       title: 'Data engineering pipeline',
       org: 'University project',
-      summary: 'A pipeline covering extraction, transformation, cleaning and storage, using SQL with relational and NoSQL databases.',
+      summary:
+        'A pipeline covering extraction, transformation, cleaning and storage, using SQL with relational and NoSQL databases.',
       highlights: ['Validated the data and analysed query performance.'],
       skills: ['sql', 'etl', 'databases', 'data-validation'],
     },
@@ -259,7 +286,8 @@ const raw = {
       kind: 'project',
       title: 'Web development project',
       org: 'University project',
-      summary: 'A database-backed web application with authentication, search and content creation, covering front end and back end.',
+      summary:
+        'A database-backed web application with authentication, search and content creation, covering front end and back end.',
       skills: ['full-stack'],
     },
     {
@@ -269,7 +297,8 @@ const raw = {
       org: 'University of Roehampton',
       period: 'Sep 2022 to 2026',
       sort: 202209,
-      summary: 'Final-year project: PiStation, a Raspberry Pi retro gaming and media console with a local AI voice assistant, awarded 75/100.',
+      summary:
+        'Final-year project: PiStation, a Raspberry Pi retro gaming and media console with a local AI voice assistant, awarded 75/100.',
       modules: [
         'Software Development',
         'Artificial Intelligence',
@@ -305,7 +334,9 @@ const raw = {
       period: 'Nov 2022 to Jan 2023',
       sort: 202211,
       summary: 'Sorted mail and parcels by postcode in a warehouse, to tight deadlines.',
-      highlights: ['Unloaded mail and parcels, sorted items by postcode and moved them through the warehouse, working efficiently to tight deadlines.'],
+      highlights: [
+        'Unloaded mail and parcels, sorted items by postcode and moved them through the warehouse, working efficiently to tight deadlines.',
+      ],
     },
   ],
 

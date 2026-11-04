@@ -31,8 +31,10 @@ const FILTERS: { id: Filter; label: string }[] = [
 ];
 const FILTER_IDS = new Set<string>(FILTERS.map((f) => f.id));
 
-const matches = (f: Filter, e: TimelineEntry) => f === 'all' || (f === 'projects' ? e.kind === 'project' : e.kind === f);
-const hasDetail = (e: TimelineEntry) => e.highlights.length > 0 || e.tags.length > 0 || e.links.length > 0 || e.hasCaseStudy;
+const matches = (f: Filter, e: TimelineEntry) =>
+  f === 'all' || (f === 'projects' ? e.kind === 'project' : e.kind === f);
+const hasDetail = (e: TimelineEntry) =>
+  e.highlights.length > 0 || e.tags.length > 0 || e.links.length > 0 || e.hasCaseStudy;
 
 function Chevron() {
   return (
@@ -143,7 +145,9 @@ export default function Timeline({ dated, undated }: Props) {
       if (!entry) return;
       setFilter((f) => (matches(f, entry) ? f : 'all'));
       if (hasDetail(entry)) setOpen((o) => new Set(o).add(entry.id));
-      requestAnimationFrame(() => requestAnimationFrame(() => document.getElementById(entry.id)?.scrollIntoView({ block: 'start' })));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => document.getElementById(entry.id)?.scrollIntoView({ block: 'start' })),
+      );
     };
     apply();
     addEventListener('hashchange', apply);
@@ -175,7 +179,13 @@ export default function Timeline({ dated, undated }: Props) {
     <div>
       <div className="filters" role="group" aria-label="Filter the timeline">
         {FILTERS.map((f) => (
-          <button key={f.id} type="button" className="filter-btn" aria-pressed={filter === f.id} onClick={() => choose(f.id)}>
+          <button
+            key={f.id}
+            type="button"
+            className="filter-btn"
+            aria-pressed={filter === f.id}
+            onClick={() => choose(f.id)}
+          >
             {f.label} <span className="count">{counts(f.id)}</span>
           </button>
         ))}

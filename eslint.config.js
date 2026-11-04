@@ -4,7 +4,17 @@ import tseslint from 'typescript-eslint';
 import astro from 'eslint-plugin-astro';
 
 export default tseslint.config(
-  { ignores: ['dist/', '.astro/', 'node_modules/', 'playwright-report/', 'test-results/', '.lighthouseci/', 'screenshots/'] },
+  {
+    ignores: [
+      'dist/',
+      '.astro/',
+      'node_modules/',
+      'playwright-report/',
+      'test-results/',
+      '.lighthouseci/',
+      'screenshots/',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   ...astro.configs.recommended,

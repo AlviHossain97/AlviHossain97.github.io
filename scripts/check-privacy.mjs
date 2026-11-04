@@ -28,7 +28,8 @@ const hits = [];
 
 function scanText(label, text) {
   text.split(/\r?\n/).forEach((line, i) => {
-    for (const r of RULES) if (r.re.test(line)) hits.push(`${label}:${i + 1}  [${r.name}]  ${line.trim().slice(0, 100)}`);
+    for (const r of RULES)
+      if (r.re.test(line)) hits.push(`${label}:${i + 1}  [${r.name}]  ${line.trim().slice(0, 100)}`);
   });
 }
 
@@ -57,8 +58,24 @@ if (withHistory) {
   if (hasCommits) {
     const names = git('log', '--all', '--name-only', '--pretty=format:').split('\n').filter(Boolean);
     for (const f of new Set(names)) for (const r of BAD_NAME) if (r.re.test(f)) hits.push(`history: ${f}  [${r.name}]`);
-    const patch = git('log', '--all', '-p', '--no-color', '--pretty=format:commit %h', '--', '.', `:(exclude)${SELF}`, ':(exclude)package-lock.json');
-    scanText('history', patch.split('\n').filter((l) => l.startsWith('+') || l.startsWith('commit')).join('\n'));
+    const patch = git(
+      'log',
+      '--all',
+      '-p',
+      '--no-color',
+      '--pretty=format:commit %h',
+      '--',
+      '.',
+      `:(exclude)${SELF}`,
+      ':(exclude)package-lock.json',
+    );
+    scanText(
+      'history',
+      patch
+        .split('\n')
+        .filter((l) => l.startsWith('+') || l.startsWith('commit'))
+        .join('\n'),
+    );
   }
 }
 
