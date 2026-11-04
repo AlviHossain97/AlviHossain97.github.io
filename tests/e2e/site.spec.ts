@@ -18,7 +18,7 @@ test.describe('page', () => {
     await expect(glance).toContainText('MSc Advanced Computer Science');
     await expect(glance).toContainText('First-Class BSc (Hons) Computer Science');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1500); // lazy hero field
+    await page.waitForTimeout(4500); // lazy hero field
     expect(errors).toEqual([]);
   });
 
@@ -351,7 +351,7 @@ test.describe('motion', () => {
     const page = await ctx.newPage();
     await page.goto('/');
     await page.waitForLoadState('networkidle');
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(4500);
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
     await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'false');
     await expect(page.locator('.hero-field *')).toHaveCount(0);
@@ -457,7 +457,7 @@ test.describe('motion', () => {
     });
     const page = await ctx.newPage();
     await page.goto('/');
-    await page.waitForTimeout(1500);
+    await page.waitForTimeout(4500);
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
     await expect(page.locator('.hero-field *')).toHaveCount(0);
     await ctx.close();
@@ -474,7 +474,7 @@ test.describe('motion', () => {
     const page = await ctx.newPage();
     const errors = collectErrors(page);
     await page.goto('/');
-    await page.waitForTimeout(1800);
+    await page.waitForTimeout(4500);
     await expect(page.locator('.hero-field *')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: 'Alvi Hossain' })).toBeVisible();
     expect(errors).toEqual([]);

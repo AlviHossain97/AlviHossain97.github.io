@@ -44,10 +44,13 @@ export default function HeroField() {
       setAllowed(on && hasWebGL() && !lowPower());
     };
     // Wait for first paint and an idle moment before asking for the chunk.
-    const start = () => {
-      if ('requestIdleCallback' in window) window.requestIdleCallback(decide, { timeout: 1500 });
-      else setTimeout(decide, 200);
-    };
+    // Decorative, so it queues behind everything that matters: load, then a 2 s pause, then an idle moment.
+    // (Compiling a shader on a slow CPU can take hundreds of milliseconds; it must not compete with the page.)
+    const start = () =>
+      setTimeout(() => {
+        if ('requestIdleCallback' in window) window.requestIdleCallback(decide, { timeout: 1500 });
+        else decide();
+      }, 2000);
     if (document.readyState === 'complete') start();
     else addEventListener('load', start, { once: true });
     document.addEventListener('motionchange', decide);
@@ -87,7 +90,7 @@ export default function HeroField() {
               saturation={0.7}
               brightness={0.85}
               opacity={0.85}
-              fidelity={small ? 0.3 : 0.5}
+              fidelity={small ? 0.2 : 0.3}
               speed={small ? 0.6 : 1}
             />
           </div>
