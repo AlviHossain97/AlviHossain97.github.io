@@ -7,11 +7,15 @@ import Projects from '../components/Projects.astro';
 import Skills from '../components/Skills.tsx';
 import Education from '../components/Education.astro';
 import Contact from '../components/Contact.astro';
-import PrintCV from '../components/PrintCV.astro';
+import Glance from '../components/Glance.astro';
 import { cv } from '../data/cv';
 import { KIND_LABEL, entriesUsing, orgLine, tagsFor, timelineOrder } from '../lib/cv-helpers';
 import type { Entry } from '../data/schema';
 
+const relatedOf = (id: string) => {
+  const p = cv.entries.find((x) => x.id === id);
+  return p ? { id: p.id, title: p.title, featured: p.featured } : undefined;
+};
 const toTimeline = (e: Entry) => ({
   id: e.id,
   kind: e.kind,
@@ -24,7 +28,8 @@ const toTimeline = (e: Entry) => ({
   highlights: e.highlights,
   tags: tagsFor(e),
   links: e.links,
-  hasCaseStudy: Boolean(e.caseStudy),
+  featured: e.featured,
+  related: e.relatedProject ? relatedOf(e.relatedProject) : undefined,
 });
 const { dated, undated } = timelineOrder(cv.entries);
 
@@ -49,9 +54,10 @@ const skills = cv.skills.map((s) => ({
   <Header />
   <main id="main">
     <Hero />
+    <Glance />
 
     <section class="section" id="timeline" aria-labelledby="timeline-title">
-      <div class="container section-grid">
+      <div class="container">
         <div class="section-head">
           <h2 id="timeline-title">Timeline</h2>
           <p>Work, education and projects, newest first. Filter, then open an entry for the detail.</p>
@@ -63,10 +69,10 @@ const skills = cv.skills.map((s) => ({
     <Projects />
 
     <section class="section" id="skills" aria-labelledby="skills-title">
-      <div class="container section-grid">
+      <div class="container">
         <div class="section-head">
           <h2 id="skills-title">Skills</h2>
-          <p>Grouped as on my CV. Each one links to where it shows up in my work.</p>
+          <p>Grouped as on my CV. Pick a skill to see where it shows up in my work.</p>
         </div>
         <Skills client:load groups={cv.skillGroups} skills={skills} />
       </div>
@@ -81,5 +87,4 @@ const skills = cv.skills.map((s) => ({
       <p>Built with Astro. Code is MIT licensed; the CV content is not.</p>
     </div>
   </footer>
-  <PrintCV />
 </Base>

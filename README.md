@@ -10,8 +10,10 @@ No analytics, no cookies, no third-party requests. Fonts (Geist, Geist Mono) are
 src/data/cv.ts        the CV: single source of truth, validated with zod at build time
 src/data/schema.ts    zod schema (also enforces the contact-link allow-list)
 src/lib/cv-helpers.ts ordering, tags, skill <-> entry links
-src/pages/            index (the CV), 404, og-card (build-only helper, removed from dist)
-src/components/       Astro components; React islands: Timeline.tsx, Skills.tsx
+src/data/diagrams.ts  architecture diagrams for the three featured projects (facts only)
+src/pages/            index, cv (print-styled CV, noindex), 404, og-card (build-only helper, removed from dist)
+src/components/       Astro components; React islands: Timeline.tsx, Skills.tsx, HeroField.tsx (lazy WebGL)
+src/lib/motion.ts     the one motion switch: reveals, counters, spotlight, magnetic buttons, pause
 src/styles/           tokens.css (colour/type/space tokens, both themes), global.css, print.css
 scripts/postbuild.mjs generates the PDF and the social image from the built site
 scripts/check-privacy.mjs privacy + content guard (pre-commit, CI, history scan)
@@ -20,14 +22,22 @@ tests/e2e/            Playwright + axe
 
 One data file feeds everything:
 
-| Output                                                     | How it is made                                                                                                                                                            |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Page content (hero, timeline, projects, skills, education) | Astro components read `cv`                                                                                                                                                |
-| JSON-LD `Person`                                           | built from `cv` in `Base.astro`                                                                                                                                           |
-| `dist/Alvi-Hossain-CV.pdf`                                 | `postbuild.mjs` prints the page's **print stylesheet** with headless Chromium, so the PDF, `Ctrl+P` and the site share one layout. The build fails if it exceeds 2 pages. |
-| `dist/og.png`                                              | `postbuild.mjs` screenshots `/og-card/` (then deletes it from `dist`)                                                                                                     |
+| Output                                                     | How it is made                                                                                                                                                                 |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Page content (hero, timeline, projects, skills, education) | Astro components read `cv`                                                                                                                                                     |
+| JSON-LD `Person`                                           | built from `cv` in `Base.astro`                                                                                                                                                |
+| `dist/Alvi-Hossain-CV.pdf`                                 | `postbuild.mjs` prints the `/cv/` page with headless Chromium, so the PDF, `Ctrl+P` on `/cv/` and the on-screen sheet share one layout. The build fails if it exceeds 2 pages. |
+| `dist/og.png`                                              | `postbuild.mjs` screenshots `/og-card/` (then deletes it from `dist`)                                                                                                          |
 
-React is used only where interactivity needs it (timeline filters/expand/deep links, skills filter). Everything else is static HTML with native `<details>` for case studies and module lists.
+React is used only where interactivity needs it (timeline filters/expand/deep links, skills filter, the hero field). Everything else is static HTML with native `<details>` for case-study detail and module lists.
+
+### 3D and motion
+
+- The hero background is ThreeUI Community's "Topo Field" (MIT, see `THIRD_PARTY_NOTICES.md`). It is raw WebGL: no `three.js` is bundled.
+- First paint is a static CSS poster. The field is a separate ~69 KB (gzip) chunk requested after `load` and an idle moment, then faded in.
+- It never starts for reduced motion, `Save-Data`, no WebGL, or low-power phones, and it is unmounted when the hero is offscreen, the tab is hidden, or the visitor presses **Pause animation** (kept across visits).
+- Reveals, counters, the scroll-drawn timeline rail, spotlight tiles and magnetic buttons all read one switch (`src/lib/motion.ts`, mirrored as `<html data-motion>`), so reduced motion is fully static.
+- `npm run check:budget` fails CI if the lazy chunk exceeds 75 KB or the other JavaScript exceeds 90 KB (gzip).
 
 ### Deep links
 
@@ -36,7 +46,9 @@ React is used only where interactivity needs it (timeline filters/expand/deep li
 | `#timeline/work`, `#timeline/education`, `#timeline/projects` | set the timeline filter                  |
 | `#cirquon`, `#learnthrive-rd`, any entry `id`                 | expand and scroll to that timeline entry |
 | `#case-pistation`                                             | open that project case study             |
-| `#skills/python`                                              | select a skill and list where it is used |
+| `#skill-python`                                               | select a skill and list where it is used |
+
+Every in-page link resolves to a real element id (a test enforces it).
 
 ## Updating the CV
 

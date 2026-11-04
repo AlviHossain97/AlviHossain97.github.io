@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { readHash } from '../lib/hash';
+import { MOTION_EVENT, motionOn, reveal } from '../lib/motion';
 
 export type Kind = 'work' | 'education' | 'project';
 type Filter = 'all' | 'work' | 'education' | 'projects';
@@ -16,7 +17,10 @@ export interface TimelineEntry {
   highlights: string[];
   tags: { label: string; skillId?: string | undefined }[];
   links: { label: string; href: string }[];
-  hasCaseStudy: boolean;
+  /** Featured projects have a case study: the timeline links to it instead of repeating it. */
+  featured: boolean;
+  /** Another entry this one points to (for example the platform case study from the R&D role). */
+  related?: { id: string; title: string; featured: boolean } | undefined;
 }
 
 interface Props {
@@ -35,7 +39,7 @@ const FILTER_IDS = new Set<string>(FILTERS.map((f) => f.id));
 const matches = (f: Filter, e: TimelineEntry) =>
   f === 'all' || (f === 'projects' ? e.kind === 'project' : e.kind === f);
 const hasDetail = (e: TimelineEntry) =>
-  e.highlights.length > 0 || e.tags.length > 0 || e.links.length > 0 || e.hasCaseStudy;
+  !e.featured && (e.highlights.length > 0 || e.tags.length > 0 || e.links.length > 0 || Boolean(e.related));
 
 function Chevron() {
   return (
@@ -89,7 +93,15 @@ function Item({
           <span className="tl-toggle tl-static">{head}</span>
         )}
       </h3>
-      <p className="tl-summary">{e.summary}</p>
+      {e.featured ? (
+        <p className="tl-summary">
+          <a className="text-link" href={`#case-${e.id}`}>
+            Read the case study
+          </a>
+        </p>
+      ) : (
+        <p className="tl-summary">{e.summary}</p>
+      )}
       {expandable && (
         <div className="panel" id={panelId} data-open={open}>
           <div className="panel-inner" inert={mounted && !open}>
@@ -106,7 +118,7 @@ function Item({
                   {e.tags.map((t) => (
                     <li key={t.label}>
                       {t.skillId ? (
-                        <a className="tag" href={`#skills/${t.skillId}`}>
+                        <a className="tag" href={`#skill-${t.skillId}`}>
                           {t.label}
                         </a>
                       ) : (
@@ -116,11 +128,11 @@ function Item({
                   ))}
                 </ul>
               )}
-              {(e.hasCaseStudy || e.links.length > 0) && (
+              {(e.related || e.links.length > 0) && (
                 <div className="link-row">
-                  {e.hasCaseStudy && (
-                    <a className="text-link" href={`#case-${e.id}`}>
-                      Read the case study
+                  {e.related && (
+                    <a className="text-link" href={`#case-${e.related.id}`}>
+                      See the {e.related.title} case study
                     </a>
                   )}
                   {e.links.map((l) => (
@@ -144,6 +156,7 @@ export default function Timeline({ dated, undated }: Props) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   const all = useMemo(() => [...dated, ...undated], [dated, undated]);
+  const root = useRef<HTMLDivElement>(null);
 
   // Deep links: #timeline/<filter> sets the filter; #<entry-id> expands and scrolls to that entry.
   useEffect(() => {
@@ -182,6 +195,42 @@ export default function Timeline({ dated, undated }: Props) {
     };
   }, [all]);
 
+  // The rail is drawn as the list scrolls past. With motion off it is fully drawn.
+  useEffect(() => {
+    const lists = () => [...(root.current?.querySelectorAll<HTMLElement>('.tl-list') ?? [])];
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      for (const list of lists()) {
+        if (!motionOn()) {
+          list.style.setProperty('--progress', '1');
+          continue;
+        }
+        const r = list.getBoundingClientRect();
+        const p = (innerHeight * 0.62 - r.top) / r.height;
+        list.style.setProperty('--progress', String(Math.min(1, Math.max(0, p))));
+      }
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    paint();
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
+    document.addEventListener(MOTION_EVENT, queue);
+    return () => {
+      removeEventListener('scroll', queue);
+      removeEventListener('resize', queue);
+      document.removeEventListener(MOTION_EVENT, queue);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, [filter]);
+
+  // Entries rise in, staggered, whenever the visible set changes.
+  useEffect(() => {
+    if (root.current) reveal(root.current.querySelectorAll('.tl-item'));
+  }, [filter]);
+
   const choose = (f: Filter) => {
     setFilter(f);
     history.replaceState(null, '', f === 'all' ? '#timeline' : `#timeline/${f}`);
@@ -204,7 +253,7 @@ export default function Timeline({ dated, undated }: Props) {
   const total = shownDated.length + shownUndated.length;
 
   return (
-    <div>
+    <div ref={root}>
       <div className="filters" role="group" aria-label="Filter the timeline">
         {FILTERS.map((f) => (
           <button

@@ -61,10 +61,16 @@ test.describe('CV schema', () => {
     expect(CvSchema.safeParse(c).success).toBe(false);
   });
 
-  test('rejects a featured project with no case study', () => {
+  test('rejects role and outcome on a project that is not featured', () => {
     const c = clone();
-    const p = c.entries.find((e) => e.featured)!;
-    delete p.caseStudy;
+    const p = c.entries.find((e) => e.kind === 'project' && !e.featured)!;
+    p.role = 'Built it.';
+    expect(CvSchema.safeParse(c).success).toBe(false);
+  });
+
+  test('rejects a relatedProject that does not exist', () => {
+    const c = clone();
+    c.entries[0]!.relatedProject = 'no-such-project';
     expect(CvSchema.safeParse(c).success).toBe(false);
   });
 

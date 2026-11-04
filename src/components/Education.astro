@@ -4,21 +4,16 @@ const edu = cv.entries.filter((e) => e.kind === 'education').sort((a, b) => (b.s
 ---
 
 <section class="section" id="education" aria-labelledby="education-title">
-  <div class="container section-grid">
+  <div class="container">
     <div class="section-head">
       <h2 id="education-title">Education</h2>
     </div>
-    <div>
+    <div class="edu-grid">
       {edu.map((e) => (
-        <article class="edu" id={`edu-${e.id}`}>
-          <div class="edu-head">
-            <div>
-              <h3>{e.title}</h3>
-              <p class="org">{e.org}</p>
-            </div>
-            <p class="period mono">{e.period}</p>
-          </div>
-          <p class="summary">{e.summary}</p>
+        <article class="edu spot" id={`edu-${e.id}`} data-reveal>
+          <h3>{e.title}</h3>
+          <p class="org">{e.org}</p>
+          <p class="period mono">{e.period}</p>
           {e.modules.length > 0 && (
             <details class="modules">
               <summary>
@@ -38,7 +33,7 @@ const edu = cv.entries.filter((e) => e.kind === 'education').sort((a, b) => (b.s
           )}
         </article>
       ))}
-      <p class="edu-note">{cv.notes.join(' ')}</p>
     </div>
+    <p class="edu-note">{cv.notes.join(' ')}</p>
   </div>
 </section>

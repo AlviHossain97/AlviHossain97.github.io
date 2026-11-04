@@ -1,0 +1,67 @@
+---
+import { cv } from '../data/cv';
+
+const byId = (id: string) => cv.entries.find((e) => e.id === id);
+const msc = byId('msc-qmul');
+const bsc = byId('bsc-roehampton');
+const openTo = cv.person.availability.replace(/^Open to (\w)/, (_, c: string) => c.toUpperCase());
+---
+
+<section class="glance" id="glance" aria-labelledby="glance-title">
+  <div class="container">
+    <h2 id="glance-title">At a glance</h2>
+    <div class="bento">
+      <article class="tile tile-a tile-lead spot" data-reveal>
+        <h3>Studying</h3>
+        <div>
+          <p class="big">{msc?.title}</p>
+          <p class="sub">{msc?.org}</p>
+          <p class="sub mono">{msc?.period} · full-time</p>
+        </div>
+      </article>
+      <article class="tile tile-b spot" data-reveal>
+        <h3>Graduated</h3>
+        <div>
+          <p class="big">First-Class BSc (Hons) Computer Science</p>
+          <p class="sub">{bsc?.org}, 2026</p>
+        </div>
+      </article>
+      <article class="tile tile-c spot" data-reveal>
+        <h3>In numbers</h3>
+        <dl class="counters">
+          <div>
+            <dt>students per lab class I supported</dt>
+            <dd>
+              <span data-count="20">20</span>
+              <small>+</small>
+            </dd>
+          </div>
+          <div>
+            <dt>first students being onboarded to LearnThrive</dt>
+            <dd>
+              <span data-count="5">5</span>
+            </dd>
+          </div>
+          <div>
+            <dt>final-year project mark, PiStation</dt>
+            <dd>
+              <span data-count="75">75</span>
+              <small>/100</small>
+            </dd>
+          </div>
+        </dl>
+      </article>
+      <article class="tile tile-d spot" data-reveal>
+        <h3>Open to</h3>
+        <p class="sub">{openTo}</p>
+      </article>
+      <article class="tile tile-e spot" data-reveal>
+        <h3>Based</h3>
+        <div>
+          <p class="big">{cv.person.location}</p>
+          <p class="sub">{cv.person.workAuthorisation}.</p>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

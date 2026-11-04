@@ -1,7 +1,19 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
+
+/** Scroll the whole page once so scroll-triggered reveals have finished before axe measures contrast. */
+const settle = async (page: Page) => {
+  const total = await page.evaluate(() => document.documentElement.scrollHeight);
+  const step = Math.round((page.viewportSize()?.height ?? 800) * 0.7);
+  for (let y = 0; y < total; y += step) {
+    await page.evaluate((top) => window.scrollTo(0, top), y);
+    await page.waitForTimeout(120);
+  }
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await page.waitForTimeout(1500);
+};
 
 for (const scheme of ['dark', 'light'] as const) {
   test.describe(`axe (${scheme})`, () => {
@@ -9,7 +21,7 @@ for (const scheme of ['dark', 'light'] as const) {
 
     test('home page has no violations, collapsed', async ({ page }) => {
       await page.goto('/');
-      await page.waitForTimeout(1200); // hero entrance animation
+      await settle(page); // entrance animation, reveals and the lazy field
       const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
       expect(
         results.violations,
@@ -23,7 +35,7 @@ for (const scheme of ['dark', 'light'] as const) {
 
     test('home page has no violations with everything expanded', async ({ page }) => {
       await page.goto('/');
-      await page.waitForTimeout(1200);
+      await settle(page);
       for (const b of await page.locator('#timeline button.tl-toggle').all()) await b.click();
       for (const d of await page.locator('details').all()) await d.locator('summary').click();
       await page
@@ -40,6 +52,22 @@ for (const scheme of ['dark', 'light'] as const) {
           1,
         ),
       ).toEqual([]);
+    });
+
+    test('home page has no violations with reduced motion (fully static)', async ({ browser }) => {
+      const ctx = await browser.newContext({ colorScheme: scheme, reducedMotion: 'reduce' });
+      const page = await ctx.newPage();
+      await page.goto('/');
+      await page.waitForTimeout(600);
+      const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+      expect(results.violations.map((v) => [v.id, v.nodes.map((n) => n.target)])).toEqual([]);
+      await ctx.close();
+    });
+
+    test('CV page has no violations', async ({ page }) => {
+      await page.goto('/cv/');
+      const results = await new AxeBuilder({ page }).withTags(TAGS).analyze();
+      expect(results.violations.map((v) => [v.id, v.nodes.map((n) => n.target)])).toEqual([]);
     });
 
     test('404 page has no violations', async ({ page }) => {

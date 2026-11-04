@@ -1,0 +1,50 @@
+---
+import Base from '../layouts/Base.astro';
+import PrintCV from '../components/PrintCV.astro';
+import { cv } from '../data/cv';
+import '../styles/print.css';
+---
+
+<Base
+  title={`CV | ${cv.person.name}`}
+  description={`${cv.person.name}: curriculum vitae. Print this page or download the PDF.`}
+  noindex
+>
+  <a class="skip-link" href="#cv">
+    Skip to the CV
+  </a>
+  <nav class="cv-bar" aria-label="CV tools">
+    <a class="btn" href="/">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M17 12H7m0 0 4-4m-4 4 4 4"></path>
+      </svg>
+      Back to the site
+    </a>
+    <div class="links">
+      <button class="btn" type="button" id="print-btn">
+        Print
+      </button>
+      <a class="btn btn-primary" href={`/${cv.site.pdfFile}`} download>
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14"></path>
+        </svg>
+        Download PDF
+      </a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to light theme">
+        <svg class="icon moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"></path>
+        </svg>
+        <svg class="icon sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+        </svg>
+      </button>
+    </div>
+  </nav>
+  <main id="cv">
+    <PrintCV />
+  </main>
+  <script>
+    document.getElementById('print-btn')?.addEventListener('click', () => print());
+  </script>
+</Base>

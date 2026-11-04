@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { readHash } from '../lib/hash';
+import { reveal } from '../lib/motion';
 
 interface Use {
   id: string;
@@ -19,9 +20,14 @@ interface Props {
   skills: SkillItem[];
 }
 
+const PREFIX = 'skill-';
+
 export default function Skills({ groups, skills }: Props) {
   const [group, setGroup] = useState<string>('all');
   const [selected, setSelected] = useState<string | null>(null);
+  const root = useRef<HTMLDivElement>(null);
+
+  const linked = (id: string) => skills.some((s) => s.id === id && s.uses.length > 0);
 
   const select = (id: string, focus: boolean) => {
     setSelected(id);
@@ -35,22 +41,21 @@ export default function Skills({ groups, skills }: Props) {
     );
   };
 
-  // Deep links: #skills/<skill-id> selects a skill. Skill tags elsewhere on the page also route here on click,
-  // so they keep working when the hash is already that value, and focus moves to the result.
+  // Deep links: #skill-<id> is the id of that skill's own element, so it always resolves.
+  // Skill tags elsewhere on the page link here too; clicking one selects the skill and moves focus to the evidence.
   useEffect(() => {
     const fromHash = () => {
-      const m = /^skills\/([a-z0-9-]+)$/.exec(readHash());
-      const skill = m ? skills.find((s) => s.id === m[1]) : undefined;
-      if (skill) select(skill.id, false);
+      const h = readHash();
+      if (h.startsWith(PREFIX) && linked(h.slice(PREFIX.length))) select(h.slice(PREFIX.length), false);
     };
     fromHash();
     addEventListener('hashchange', fromHash);
     const onClick = (ev: MouseEvent) => {
-      const a = (ev.target as Element | null)?.closest?.('a[href^="#skills/"]');
-      const id = a?.getAttribute('href')?.slice('#skills/'.length) ?? '';
-      if (!a || ev.defaultPrevented || ev.metaKey || ev.ctrlKey || !skills.some((s) => s.id === id)) return;
+      const a = (ev.target as Element | null)?.closest?.(`a[href^="#${PREFIX}"]`);
+      const id = a?.getAttribute('href')?.slice(PREFIX.length + 1) ?? '';
+      if (!a || ev.defaultPrevented || ev.metaKey || ev.ctrlKey || !linked(id)) return;
       ev.preventDefault();
-      history.replaceState(null, '', `#skills/${id}`);
+      history.replaceState(null, '', `#${PREFIX}${id}`);
       select(id, true);
     };
     document.addEventListener('click', onClick);
@@ -60,16 +65,16 @@ export default function Skills({ groups, skills }: Props) {
     };
   }, [skills]);
 
-  const pick = (id: string) => {
-    setSelected(selected === id ? null : id);
-  };
+  useEffect(() => {
+    if (root.current) reveal(root.current.querySelectorAll('.skill-group'));
+  }, [group]);
 
   const current = skills.find((s) => s.id === selected);
   const visibleGroups = groups.filter((g) => group === 'all' || g.id === group);
   const visibleCount = skills.filter((s) => visibleGroups.some((g) => g.id === s.group)).length;
 
   return (
-    <div>
+    <div ref={root}>
       <div className="filters" role="group" aria-label="Filter skills by group">
         {[{ id: 'all', label: 'All' }, ...groups].map((g) => (
           <button
@@ -90,24 +95,20 @@ export default function Skills({ groups, skills }: Props) {
             <h3 id="skill-evidence-title" tabIndex={-1}>
               {current.name}
             </h3>
-            {current.uses.length > 0 ? (
-              <ul>
-                {current.uses.map((u) => (
-                  <li key={u.id}>
-                    <a href={`#${u.id}`}>
-                      <span className="ev-title">{u.title}</span>
-                      <span className="ev-meta mono">
-                        {u.kindLabel}
-                        {u.org ? ` · ${u.org}` : ''}
-                        {u.period ? ` · ${u.period}` : ''}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p>Listed among my skills. No role or project on this site is linked to it yet.</p>
-            )}
+            <ul>
+              {current.uses.map((u) => (
+                <li key={u.id}>
+                  <a href={`#${u.id}`}>
+                    <span className="ev-title">{u.title}</span>
+                    <span className="ev-meta mono">
+                      {u.kindLabel}
+                      {u.org ? ` · ${u.org}` : ''}
+                      {u.period ? ` · ${u.period}` : ''}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
           </>
         ) : (
           <p>Select a skill to see where I have used it.</p>
@@ -126,28 +127,30 @@ export default function Skills({ groups, skills }: Props) {
               .filter((s) => s.group === g.id)
               .map((s) => (
                 <li key={s.id}>
-                  <button
-                    type="button"
-                    className="skill-btn"
-                    aria-pressed={selected === s.id}
-                    data-unlinked={s.uses.length === 0}
-                    onClick={() => pick(s.id)}
-                  >
-                    {s.name}
-                    {s.uses.length === 0 && <span className="sr-only">, not linked yet</span>}
-                    {s.uses.length > 0 && (
+                  {s.uses.length > 0 ? (
+                    <button
+                      type="button"
+                      id={`${PREFIX}${s.id}`}
+                      className="skill-btn"
+                      aria-pressed={selected === s.id}
+                      onClick={() => setSelected(selected === s.id ? null : s.id)}
+                    >
+                      {s.name}
                       <span className="count">
                         {s.uses.length}
                         <span className="sr-only"> linked entries</span>
                       </span>
-                    )}
-                  </button>
+                    </button>
+                  ) : (
+                    <span id={`${PREFIX}${s.id}`} className="skill-chip">
+                      {s.name}
+                    </span>
+                  )}
                 </li>
               ))}
           </ul>
         </div>
       ))}
-      <span className="dashed-note">Dashed skills are on my CV but not yet tied to a role or project here.</span>
     </div>
   );
 }

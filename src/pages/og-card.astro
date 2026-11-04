@@ -1,5 +1,6 @@
 ---
 // 1200x630 social card. Screenshotted by scripts/postbuild.mjs into dist/og.png, then removed from dist.
+import '@fontsource-variable/bricolage-grotesque/wght.css';
 import '@fontsource-variable/geist/wght.css';
 import '@fontsource-variable/geist-mono/wght.css';
 import { cv } from '../data/cv';
@@ -17,8 +18,8 @@ import { cv } from '../data/cv';
         margin: 0;
         width: 1200px;
         height: 630px;
-        background: #0b0f15;
-        color: #f2f4f7;
+        background: #0a0d18;
+        color: rgb(244, 246, 251);
         font-family: 'Geist Variable', sans-serif;
         overflow: hidden;
       }
@@ -32,16 +33,23 @@ import { cv } from '../data/cv';
         flex-direction: column;
         justify-content: space-between;
         background-image:
-          linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-        background-size: 48px 48px;
+          radial-gradient(60% 80% at 92% 8%, rgba(34, 200, 235, 0.38), transparent 70%),
+          radial-gradient(55% 70% at 100% 100%, rgba(140, 90, 245, 0.4), transparent 70%),
+          linear-gradient(rgba(150, 190, 255, 0.07) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(150, 190, 255, 0.07) 1px, transparent 1px);
+        background-size:
+          auto,
+          auto,
+          56px 56px,
+          56px 56px;
       }
       h1 {
         margin: 0;
-        font-size: 120px;
+        font-family: 'Bricolage Grotesque Variable', sans-serif;
+        font-size: 128px;
         line-height: 1;
-        letter-spacing: -0.04em;
-        font-weight: 650;
+        letter-spacing: -0.035em;
+        font-weight: 700;
       }
       ul {
         margin: 36px 0 0;
@@ -58,7 +66,7 @@ import { cv } from '../data/cv';
         height: 10px;
         margin-right: 18px;
         border-radius: 50%;
-        background: #7fe0d2;
+        background: linear-gradient(135deg, #43dcf2, #9b6cff);
         vertical-align: middle;
       }
       .foot {

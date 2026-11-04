@@ -1,5 +1,5 @@
 ---
-// Hidden on screen. Printing the page (or generating the PDF) shows only this block.
+// The CV itself: shown on the /cv page and printed (or turned into the PDF) as-is.
 import { cv } from '../data/cv';
 import { displayUrl, orgLine } from '../lib/cv-helpers';
 
@@ -40,6 +40,7 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
         </h3>
         <span class="pc-when">{e.period}</span>
       </div>
+      <p>{e.summary}</p>
       <ul>
         {e.highlights.map((h) => (
           <li>{h}</li>
@@ -60,6 +61,8 @@ const skillsByGroup = cv.skillGroups.map((g) => ({
           <span class="pc-when">{e.period}</span>
         </div>
         <p>{e.summary}</p>
+        {e.role && <p>My role: {e.role}</p>}
+        {e.outcome && <p>Outcome: {e.outcome}</p>}
         {e.highlights.length > 0 && (
           <ul>
             {e.highlights.map((h) => (

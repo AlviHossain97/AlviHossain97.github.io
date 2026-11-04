@@ -1,9 +1,10 @@
 ---
 import '@fontsource-variable/geist/wght.css';
 import '@fontsource-variable/geist-mono/wght.css';
+import '@fontsource-variable/bricolage-grotesque/wght.css';
 import geistLatin from '@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url';
+import bricolageLatin from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import '../styles/global.css';
-import '../styles/print.css';
 import { cv } from '../data/cv';
 
 interface Props {
@@ -77,6 +78,7 @@ const person = {
     <meta name="twitter:image" content={ogImage} />
 
     <link rel="preload" href={geistLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={bricolageLatin} as="font" type="font/woff2" crossorigin />
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(person)} />}
 
     <script is:inline>
@@ -91,6 +93,15 @@ const person = {
         }
         if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
         d.dataset.theme = t;
+        // Motion defaults off for reduced-motion visitors, Save-Data, or a saved "pause" choice (set before first paint).
+        let paused = false;
+        try {
+          paused = localStorage.getItem('motion-paused') === '1';
+        } catch {
+          /* storage blocked */
+        }
+        const save = Boolean(navigator.connection && navigator.connection.saveData);
+        d.dataset.motion = paused || save || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'off' : 'on';
         document
           .querySelector('meta[name="theme-color"]')
           ?.setAttribute('content', t === 'light' ? '#fbfaf7' : '#0b0f15');
@@ -100,6 +111,7 @@ const person = {
   <body>
     <slot />
     <script>
+      import '../scripts/page';
       const root = document.documentElement;
       const btn = document.getElementById('theme-toggle');
       const meta = document.querySelector('meta[name="theme-color"]');

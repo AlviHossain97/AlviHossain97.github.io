@@ -1,0 +1,104 @@
+---
+import type { Diagram } from '../data/diagrams';
+
+interface Props {
+  diagram: Diagram;
+}
+const { diagram } = Astro.props;
+
+// Deterministic layout: every group is a column of fixed-size nodes, so no text measuring is needed.
+const NODE_W = 240;
+const NODE_H = 36;
+const NODE_GAP = 10;
+const PAD = 16;
+const GROUP_GAP = 24;
+const HEAD = 34;
+const MAX_CHARS = 32;
+
+for (const g of diagram.groups)
+  for (const item of g.items)
+    if (item.length > MAX_CHARS) throw new Error(`ArchDiagram: "${item}" is longer than ${MAX_CHARS} characters`);
+
+const colW = NODE_W + 2 * 12;
+const groupH = (g: Diagram['groups'][number]) => HEAD + g.items.length * (NODE_H + NODE_GAP) + 2;
+const tallest = Math.max(...diagram.groups.map(groupH));
+
+/** Wide layout: columns. Tall layout (phones): the same groups stacked in one column. */
+const LINK_GAP = 130; // room for the label on a stated relationship
+const wide = (() => {
+  let x = PAD;
+  const cols = diagram.groups.map((g, i) => {
+    const c = { g, x, y: PAD, h: groupH(g) - 2 };
+    x += colW + (diagram.link?.from === i ? LINK_GAP : GROUP_GAP);
+    return c;
+  });
+  return { w: x - GROUP_GAP + PAD, h: PAD * 2 + tallest, cols };
+})();
+const tall = (() => {
+  let y = PAD;
+  const cols = diagram.groups.map((g) => {
+    const h = groupH(g) - 2;
+    const c = { g, x: PAD, y, h };
+    y += h + 14;
+    return c;
+  });
+  return { w: colW + PAD * 2, h: y - 14 + PAD, cols };
+})();
+
+const link = diagram.link;
+const uid = diagram.id;
+const layouts = [
+  { cls: 'wide', ...wide },
+  { cls: 'tall', ...tall },
+] as const;
+---
+
+<div class="diagram" role="group" aria-labelledby={`dg-${uid}-t`}>
+  <figure>
+    <figcaption id={`dg-${uid}-t`} class="sr-only">
+      {diagram.title}. {diagram.desc}
+    </figcaption>
+    {layouts.map((l) => (
+      <svg class={l.cls} viewBox={`0 0 ${l.w} ${l.h}`} role="img" aria-hidden="true" focusable="false">
+        {l.cols.map(({ g, x, y, h }, gi) => (
+          <g>
+            <rect class="dg-group" x={x} y={y} width={colW} height={h} rx="14" />
+            <text class="dg-title" x={x + 14} y={y + 22}>
+              {g.label}
+            </text>
+            {g.items.map((item, i) => (
+              <g>
+                <rect
+                  class="dg-node"
+                  data-tone={g.tone}
+                  x={x + 12}
+                  y={y + HEAD + i * (NODE_H + NODE_GAP)}
+                  width={NODE_W}
+                  height={NODE_H}
+                  rx="9"
+                />
+                <text class="dg-text" x={x + 24} y={y + HEAD + i * (NODE_H + NODE_GAP) + NODE_H / 2 + 5}>
+                  {item}
+                </text>
+              </g>
+            ))}
+            {link && l.cls === 'wide' && gi === link.from && (
+              <g>
+                <path class="dg-link" d={`M ${x + colW} ${y + HEAD + NODE_H / 2} H ${l.cols[link.to]!.x}`} />
+                <text
+                  class="dg-link-label"
+                  x={x + colW + LINK_GAP / 2}
+                  y={y + HEAD + NODE_H / 2 - 8}
+                  text-anchor="middle"
+                >
+                  {link.label}
+                </text>
+              </g>
+            )}
+          </g>
+        ))}
+      </svg>
+    ))}
+    <p class="diagram-caption">{diagram.caption}</p>
+  </figure>
+</div>

@@ -1,6 +1,104 @@
-/* Print stylesheet. The same output becomes the downloadable PDF (scripts/postbuild.mjs prints this page). */
+/* The /cv page. On screen it reads as a sheet of paper; printing it (or the generated PDF, scripts/postbuild.mjs)
+   gives the same content on A4. Imported by src/pages/cv.astro only. */
+.cv-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  justify-content: space-between;
+  width: min(100% - 2rem, 52rem);
+  margin: var(--s-5) auto var(--s-4);
+}
+.cv-bar .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+}
 .print-cv {
-  display: none;
+  width: min(100% - 2rem, 52rem);
+  margin: 0 auto var(--s-8);
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border-radius: var(--radius);
+  background: #fff;
+  color: #14171f;
+  box-shadow: var(--shadow-lift);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  --muted: #444b59;
+  --rule: #c4c9d3;
+  --pc-accent: #0b5f78;
+}
+.print-cv a {
+  color: inherit;
+  text-underline-offset: 0.2em;
+}
+.print-cv h1 {
+  font-size: 2.25rem;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.print-cv .pc-headline {
+  margin-top: 0.25rem;
+  color: var(--pc-accent);
+  font-weight: 600;
+}
+.print-cv .pc-contact {
+  margin-top: 0.4rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+}
+.print-cv .pc-contact a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2rem; /* touch target on screen; reset for print below */
+}
+.print-cv h2 {
+  margin: 1.5rem 0 0.4rem;
+  padding-bottom: 0.2rem;
+  border-bottom: 1px solid var(--rule);
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--pc-accent);
+  font-weight: 700;
+}
+.print-cv h3 {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+}
+.print-cv .pc-entry {
+  margin-top: 0.8rem;
+}
+.print-cv .pc-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 1rem;
+  align-items: baseline;
+}
+.print-cv .pc-when,
+.print-cv .pc-org {
+  color: var(--muted);
+}
+.print-cv .pc-when {
+  font-size: 0.875rem;
+}
+.print-cv ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.1rem;
+  list-style: disc;
+}
+.print-cv li {
+  margin-top: 0.15rem;
+}
+.print-cv p {
+  margin-top: 0.3rem;
 }
 
 @media print {
@@ -13,11 +111,16 @@
     background: #fff !important;
     color: #111 !important;
   }
-  body > :not(.print-cv) {
+  .cv-bar {
     display: none !important;
   }
   .print-cv {
-    display: block;
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
     font-family: var(--font-sans);
     font-size: 9.2pt;
     line-height: 1.38;
@@ -47,6 +150,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0 12pt;
+  }
+  .print-cv .pc-contact a {
+    min-height: 0;
   }
   .print-cv h2 {
     margin: 10pt 0 4pt;
