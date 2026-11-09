@@ -1,5 +1,4 @@
 ---
-import HeroField from './HeroField';
 import { cv } from '../data/cv';
 
 const pdf = `/${cv.site.pdfFile}`;
@@ -9,10 +8,6 @@ let n = 0;
 ---
 
 <section class="hero" id="top" aria-labelledby="hero-title">
-  <div class="hero-poster" aria-hidden="true"></div>
-  <HeroField client:only="react" />
-  <div class="hero-scrim" aria-hidden="true"></div>
-
   <div class="container">
     <div class="hero-inner">
       <h1 id="hero-title" class="hero-name" aria-label={cv.person.name}>
@@ -61,12 +56,4 @@ let n = 0;
       </div>
     </div>
   </div>
-
-  <button type="button" class="motion-btn" data-motion-toggle>
-    <span class="bars" aria-hidden="true">
-      <i></i>
-      <i></i>
-    </span>
-    <span data-label>Pause animation</span>
-  </button>
 </section>

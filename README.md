@@ -12,7 +12,7 @@ src/data/schema.ts    zod schema (also enforces the contact-link allow-list)
 src/lib/cv-helpers.ts ordering, tags, skill <-> entry links
 src/data/diagrams.ts  architecture diagrams for the three featured projects (facts only)
 src/pages/            index, cv (print-styled CV, noindex), 404, og-card (build-only helper, removed from dist)
-src/components/       Astro components; React islands: Timeline.tsx, Skills.tsx, HeroField.tsx (lazy WebGL)
+src/components/       Astro components; React islands: Timeline.tsx, Skills.tsx, PageField.tsx (lazy WebGL, fixed behind the page)
 src/lib/motion.ts     the one motion switch: reveals, counters, spotlight, magnetic buttons, pause
 src/styles/           tokens.css (colour/type/space tokens, both themes), global.css, print.css
 scripts/postbuild.mjs generates the PDF and the social image from the built site
@@ -29,14 +29,16 @@ One data file feeds everything:
 | `dist/Alvi-Hossain-CV.pdf`                                 | `postbuild.mjs` prints the `/cv/` page with headless Chromium, so the PDF, `Ctrl+P` on `/cv/` and the on-screen sheet share one layout. The build fails if it exceeds 2 pages. |
 | `dist/og.png`                                              | `postbuild.mjs` screenshots `/og-card/` (then deletes it from `dist`)                                                                                                          |
 
-React is used only where interactivity needs it (timeline filters/expand/deep links, skills filter, the hero field). Everything else is static HTML with native `<details>` for case-study detail and module lists.
+React is used only where interactivity needs it (timeline filters/expand/deep links, skills filter, the page background). Everything else is static HTML with native `<details>` for case-study detail and module lists.
 
 ### 3D and motion
 
-- The hero background is ThreeUI Community's "Stream Convergence Background" (MIT, see `THIRD_PARTY_NOTICES.md`): one WebGL canvas drawn by a small fragment shader, with no `three.js`. It makes no network request of its own and uses no iframe.
-- **Not every ThreeUI component is like that.** Many (for example "Topo Field") render a sandboxed iframe that loads Tailwind, iconify, GSAP and fonts from public CDNs. Those would break the "no third-party requests" rule, so they are not used. A test fails if the hero makes any cross-origin request or adds an iframe.
+- The animated background behind the whole page is ThreeUI Community's "Stream Convergence Background" (MIT, see `THIRD_PARTY_NOTICES.md`): one WebGL canvas drawn by a small fragment shader, with no `three.js`. It makes no network request of its own and uses no iframe.
+- **Not every ThreeUI component is like that.** Many (for example "Topo Field") render a sandboxed iframe that loads Tailwind, iconify, GSAP and fonts from public CDNs. Those would break the "no third-party requests" rule, so they are not used. A test fails if the page makes any cross-origin request or adds an iframe.
+- The field is a fixed layer behind every section. It is full strength behind the hero and settles to 40% as you scroll (`--field-o`, set from the scroll position), and a fixed left-to-right scrim keeps text contrast independent of it. Tests sample the real pixels behind body text at several scroll positions in both themes.
+- The **Pause animation** button is fixed to the corner of the viewport so it is reachable from anywhere.
 - First paint is a static CSS poster. The field is a separate chunk (size is checked by `npm run check:budget`), requested only after the `load` event and an idle moment, then faded in.
-- It never starts for reduced motion, `Save-Data`, no WebGL, or low-power touch devices, and it is unmounted when the hero is offscreen, the tab is hidden, or the visitor presses **Pause animation** (kept across visits).
+- It never starts for reduced motion, `Save-Data`, no WebGL, or low-power touch devices, and it is unmounted when the tab is hidden or the visitor presses **Pause animation** (kept across visits).
 - Reveals, counters, the scroll-drawn timeline rail, spotlight tiles and magnetic buttons all read one switch (`src/lib/motion.ts`, mirrored as `<html data-motion>`), so reduced motion is fully static.
 - `npm run check:budget` fails CI if the lazy chunk exceeds 10 KB or the other JavaScript exceeds 90 KB (gzip).
 

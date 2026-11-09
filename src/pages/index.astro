@@ -2,6 +2,8 @@
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
 import Hero from '../components/Hero.astro';
+import PageField from '../components/PageField';
+import MotionToggle from '../components/MotionToggle.astro';
 import Timeline from '../components/Timeline.tsx';
 import Projects from '../components/Projects.astro';
 import Skills from '../components/Skills.tsx';
@@ -48,10 +50,14 @@ const skills = cv.skills.map((s) => ({
 ---
 
 <Base jsonLd>
+  <div class="page-poster" aria-hidden="true"></div>
+  <PageField client:only="react" />
+  <div class="page-scrim" aria-hidden="true"></div>
   <a class="skip-link" href="#main">
     Skip to content
   </a>
   <Header />
+  <MotionToggle />
   <main id="main">
     <Hero />
     <Glance />

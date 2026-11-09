@@ -1,13 +1,14 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 
 /**
- * Animated flowing ribbons behind the hero (ThreeUI Community "Stream Convergence Background", MIT).
+ * Animated flowing ribbons behind the whole page (ThreeUI Community "Stream Convergence Background", MIT).
  * Verified self-contained: one WebGL canvas, no iframe, no CDN, no remote request (tests/e2e enforces it).
- * It is a progressive enhancement over a static CSS poster:
- *  - the effect's code is a separate chunk, requested only after first paint;
+ * It is a fixed layer behind the content, a progressive enhancement over a static CSS poster:
+ *  - the effect's code is a separate chunk, requested only after load and a short pause;
  *  - nothing renders under reduced motion, Save-Data, a missing WebGL context, or after "Pause animation";
- *  - it is unmounted (so the GPU stops) while the hero is offscreen or the tab is hidden;
- *  - phones with little CPU or memory keep the poster.
+ *  - it is unmounted (so the GPU stops) while the tab is hidden;
+ *  - touch devices with little CPU or memory keep the poster;
+ *  - it is bright behind the hero and dims as you scroll, so body text keeps its contrast (see --field-o).
  */
 const Field = lazy(() =>
   import('@designcodeio/threeui/components/StreamConvergenceBackground').then((m) => ({
@@ -32,10 +33,13 @@ const lowPower = (): boolean => {
   return matchMedia('(pointer: coarse)').matches && ((n.hardwareConcurrency ?? 8) <= 4 || (n.deviceMemory ?? 8) <= 4);
 };
 
-export default function HeroField() {
-  const host = useRef<HTMLDivElement>(null);
+/** Field strength: full over the hero, settling to this value once the page has scrolled past it. */
+const FLOOR = 0.4;
+
+export default function PageField() {
+  const layer = useRef<HTMLDivElement>(null);
   const [allowed, setAllowed] = useState(false); // device and preference gate
-  const [visible, setVisible] = useState(true); // hero on screen and tab visible
+  const [visible, setVisible] = useState(true); // tab visible
   const [ready, setReady] = useState(false); // first frame can fade in
 
   useEffect(() => {
@@ -43,7 +47,6 @@ export default function HeroField() {
       const on = document.documentElement.dataset.motion === 'on';
       setAllowed(on && hasWebGL() && !lowPower());
     };
-    // Wait for first paint and an idle moment before asking for the chunk.
     // Decorative, so it queues behind everything that matters: load, then a 2 s pause, then an idle moment.
     // (Compiling a shader on a slow CPU can take hundreds of milliseconds; it must not compete with the page.)
     const start = () =>
@@ -58,19 +61,29 @@ export default function HeroField() {
   }, []);
 
   useEffect(() => {
-    const el = host.current?.closest('.hero'); // the island wrapper is display: contents, so observe the section
-    if (!el) return;
-    let inView = true;
-    const update = () => setVisible(inView && !document.hidden);
-    const io = new IntersectionObserver((entries) => {
-      inView = entries.at(-1)?.isIntersecting ?? true;
-      update();
-    });
-    io.observe(el);
+    const update = () => setVisible(!document.hidden);
     document.addEventListener('visibilitychange', update);
+    return () => document.removeEventListener('visibilitychange', update);
+  }, []);
+
+  // Strength follows the scroll position: 1 at the top, FLOOR after about 70% of a viewport.
+  useEffect(() => {
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      const t = Math.min(1, Math.max(0, scrollY / (innerHeight * 0.7)));
+      layer.current?.style.setProperty('--field-o', String(1 - (1 - FLOOR) * t));
+    };
+    const queue = () => {
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    paint();
+    addEventListener('scroll', queue, { passive: true });
+    addEventListener('resize', queue);
     return () => {
-      io.disconnect();
-      document.removeEventListener('visibilitychange', update);
+      removeEventListener('scroll', queue);
+      removeEventListener('resize', queue);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
@@ -81,10 +94,10 @@ export default function HeroField() {
   }, [run]);
 
   return (
-    <div ref={host} className="hero-field" data-ready={ready} aria-hidden="true">
+    <div ref={layer} className="page-field" data-ready={ready} aria-hidden="true">
       {run && (
         <Suspense fallback={null}>
-          <div className="hero-field-canvas" ref={(n) => void (n && requestAnimationFrame(() => setReady(true)))}>
+          <div className="page-field-canvas" ref={(n) => void (n && requestAnimationFrame(() => setReady(true)))}>
             <Field
               hue={280}
               saturation={0.7}

@@ -1,0 +1,12 @@
+---
+// "Pause animation": fixed at the corner of the viewport so it is reachable from anywhere on the page (WCAG 2.2.2).
+// src/scripts/page.ts wires it up; its label carries the state.
+---
+
+<button type="button" class="motion-btn" data-motion-toggle>
+  <span class="bars" aria-hidden="true">
+    <i></i>
+    <i></i>
+  </span>
+  <span data-label>Pause animation</span>
+</button>

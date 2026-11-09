@@ -150,6 +150,10 @@ test.describe('timeline', () => {
 
   test('entries expand and collapse with the keyboard', async ({ page }) => {
     await page.goto('/');
+    // Wait for hydration: a key press before React attaches its handlers does nothing.
+    await page.waitForFunction(() =>
+      [...document.querySelectorAll('astro-island')].every((i) => !i.hasAttribute('ssr')),
+    );
     const btn = page.locator('#btn-learnthrive-rd');
     await btn.focus();
     await expect(btn).toHaveAttribute('aria-expanded', 'false');
@@ -353,8 +357,8 @@ test.describe('motion', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(4500);
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'false');
-    await expect(page.locator('.hero-field *')).toHaveCount(0);
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'false');
+    await expect(page.locator('.page-field *')).toHaveCount(0);
     const style = await page.evaluate(() => {
       const c = document.querySelector('.hero-name .c')!;
       const tile = document.querySelector('.tile')!;
@@ -378,16 +382,16 @@ test.describe('motion', () => {
   test('Pause animation stops the field and the page animation, and the choice persists', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'on');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
     const toggle = page.getByRole('button', { name: 'Pause animation' });
     await expect(toggle).not.toHaveAttribute('aria-pressed');
     await toggle.click();
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'false');
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'false');
     await expect(page.getByRole('button', { name: 'Play animation' })).toBeVisible();
     await page.reload();
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-    await expect(page.locator('.hero-field *')).toHaveCount(0);
+    await expect(page.locator('.page-field *')).toHaveCount(0);
   });
 
   test('the 3D chunk is requested only after the page has loaded', async ({ page }) => {
@@ -400,7 +404,7 @@ test.describe('motion', () => {
     });
     page.once('load', () => (loaded = true));
     await page.goto('/');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
     expect(early, 'requested before the load event').toEqual([]);
     expect(later.length).toBeGreaterThan(0);
   });
@@ -414,7 +418,7 @@ test.describe('motion', () => {
       foreign.push(url);
     });
     await page.goto('/');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
     await page.waitForTimeout(2500);
     await expect(page.locator('iframe')).toHaveCount(0);
     expect(foreign).toEqual([]);
@@ -422,9 +426,9 @@ test.describe('motion', () => {
 
   test('nothing focusable lives inside the decorative hero field', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+    await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
     await expect(
-      page.locator('.hero-field a, .hero-field button, .hero-field iframe, .hero-field [tabindex]'),
+      page.locator('.page-field a, .page-field button, .page-field iframe, .page-field [tabindex]'),
     ).toHaveCount(0);
   });
 
@@ -459,7 +463,7 @@ test.describe('motion', () => {
     await page.goto('/');
     await page.waitForTimeout(4500);
     await expect(page.locator('html')).toHaveAttribute('data-motion', 'off');
-    await expect(page.locator('.hero-field *')).toHaveCount(0);
+    await expect(page.locator('.page-field *')).toHaveCount(0);
     await ctx.close();
   });
 
@@ -475,7 +479,7 @@ test.describe('motion', () => {
     const errors = collectErrors(page);
     await page.goto('/');
     await page.waitForTimeout(4500);
-    await expect(page.locator('.hero-field *')).toHaveCount(0);
+    await expect(page.locator('.page-field *')).toHaveCount(0);
     await expect(page.getByRole('heading', { level: 1, name: 'Alvi Hossain' })).toBeVisible();
     expect(errors).toEqual([]);
     await ctx.close();
@@ -527,7 +531,7 @@ test.describe('hero legibility over the animated field', () => {
       const ctx = await browser.newContext({ colorScheme: scheme, viewport: { width: 1280, height: 800 } });
       const page = await ctx.newPage();
       await page.goto('/');
-      await expect(page.locator('.hero-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
+      await expect(page.locator('.page-field')).toHaveAttribute('data-ready', 'true', { timeout: 10_000 });
       await page.waitForTimeout(1500);
       const targets = [
         { sel: '.hero-name', min: 3 },
